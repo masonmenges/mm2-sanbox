@@ -1,16 +1,13 @@
-from prefect import flow, task, get_run_logger
+from prefect import flow, task, get_run_logger, Flow
 import smtplib
 import os
 import random
-import functools
 import sys
 from prefect.runner.storage import GitRepository
 from prefect.blocks.system import Secret
 from functools import wraps
 
 
-
-    
 def prefect_flow_on_completion(flow, flow_run, state):
     print("This is in an on_completion hook")
     return
@@ -19,17 +16,16 @@ def prefect_flow_on_failure(flow, flow_run, state):
     print("This is in an on_failure hook")
     return
 
-
-def wrapped_flow(**kwargs):
+def wrapped_flow(**kwargs) -> Flow:
     return flow(
         on_failure=[prefect_flow_on_failure],
         on_completion=[prefect_flow_on_completion],
         **kwargs
     )
 
+
 def email_with_args(msg, email):
     def decorator(func):
-        @functools.wraps(func)
         def wrapper(*args, **kwargs):
             print(msg)
             print("Extra logic here")
