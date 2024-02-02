@@ -14,6 +14,7 @@ def prefect_flow_on_failure(flow, flow_run, state):
     return
 
 def wrapped_flow(**kwargs):
+    print("Do some action before flow runs")
     return flow(
         on_failure=[prefect_flow_on_failure],
         on_completion=[prefect_flow_on_completion],
@@ -40,7 +41,6 @@ if __name__ == "__main__":
     )
     test.storage=GitRepository(url="https://github.com/masonmenges/mm2-sanbox.git")
     test.entrypoint = "flows/wrapped_flow_test.py:hello_flow"
-    print(test)
 
     deploy(
         test,
