@@ -2,6 +2,7 @@ from prefect import flow, task, get_run_logger
 import smtplib
 import os
 import random
+import functools
 import sys
 from prefect.runner.storage import GitRepository
 from prefect.blocks.system import Secret
@@ -28,6 +29,7 @@ def wrapped_flow(**kwargs):
 
 def email_with_args(msg, email):
     def decorator(func):
+        @functools.wraps(func)
         def wrapper(*args, **kwargs):
             print(msg)
             print("Extra logic here")
