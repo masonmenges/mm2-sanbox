@@ -1,0 +1,14 @@
+worker: 
+  config:
+    workPool: "k8s-minikube-test"
+  cloudApiConfig:
+    accountId: "9b649228-0419-40e1-9e0d-44954b5c0ab6"
+    workspaceId: "c43bcc47-3a05-461e-8020-8920ad28a14b"
+    apiKeySecret:
+      name: prefect-api-key
+      key: key
+  extraEnvVars:
+    - name: PREFECT_LOGGING_ORION_WHEN_MISSING_FLOW
+      value: ignore
+    - name: PREFECT_LOGGING_LEVEL
+      value: DEBUG
