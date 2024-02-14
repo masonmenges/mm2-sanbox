@@ -1,6 +1,4 @@
-from prefect import flow, task, get_run_logger, deploy
-from prefect.runner.storage import GitRepository
-from prefect.deployments.runner import DeploymentImage 
+from prefect import flow, task, get_run_logger, deploy, suspend_flow_run
 import random
 import sys
 from functools import wraps
@@ -27,21 +25,18 @@ def hello_flow():
     logger.info("Hello world!")
     random_number = random.randint(1, 10)
 
-    if random_number % 2 == 0:
-        raise ValueError("Random number is even, so we'll fail the flow")
-    else:
-        return
+    # if random_number % 2 == 0:
+    #     raise ValueError("Random number is even, so we'll fail the flow")
+    # else:
+    return
 
 
 if __name__ == "__main__":
-    # hello_flow()
-
     test = hello_flow.to_deployment(
     name=f"decorated_and_wrapped_flow"
     )
     test.storage=GitRepository(url="https://github.com/masonmenges/mm2-sanbox.git")
     test.entrypoint = "flows/wrapped_flow_test.py:hello_flow"
-
     deploy(
         test,
         work_pool_name="docker-test",
