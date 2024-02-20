@@ -41,7 +41,7 @@ def con_flow():
 if __name__ == "__main__":
     con_flow.from_source(
         source=GitRepository(url="https://github.com/masonmenges/mm2-sanbox.git"),
-        entrypoint="flows/concurrency.py",
+        entrypoint="flows/concurrency.py:con_flow",
     ).deploy(
         name="concurrency-test",
         work_pool_name="docker-test",
