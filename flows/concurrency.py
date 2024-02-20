@@ -1,5 +1,5 @@
 from prefect import flow, task, get_run_logger
-from prefect.concurrency.sync import concurrency
+from prefect.concurrency.asyncio import concurrency
 import time
 
 from prefect.deployments.runner import DeploymentImage 
@@ -11,13 +11,13 @@ CONCURRENCY_CONFIG = "concurrency-test-limit-1"
 
 
 @task
-def long_running_task():
+async def long_running_task():
     logger = get_run_logger()
 
     logger.info(f"Using concurrency limit {CONCURRENCY_CONFIG}..")
     logger.info(f"Attempting to acquire concurrency limit slot..")
 
-    with concurrency(CONCURRENCY_CONFIG, occupy=1):
+    async with concurrency(CONCURRENCY_CONFIG, occupy=1):
 
         logger.info(f"Concurrency limit slot acquired..")
 

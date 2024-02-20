@@ -27,18 +27,19 @@ def demo_flow():
     return True
 
 
+demo_flow()
+
+
 if __name__ == "__main__":
     demo_flow.from_source(
         source=GitRepository(url="https://github.com/masonmenges/mm2-sanbox.git"),
-        entrypoint="flows/concurrency.py:con_flow",
+        entrypoint="flows/demo.py:demo_flow",
     ).deploy(
-        name="concurrency-test",
-        work_pool_name="docker-test",
+        name="k8s-demo-test",
+        work_pool_name="k8s-minikube-test",
         image=DeploymentImage(
-                    name="masonm2/temprepo:hello_flow",
+                    name="masonm2/temprepo:demo_flow",
                     dockerfile="./Dockerfile",
-                ),
-        schedule=CronSchedule(cron="0/5 * * * *", timezone="America/Denver")
-
+                )
     )
 
