@@ -1,45 +1,39 @@
-from prefect import flow, task, deploy
-from prefect.deployments.runner import DeploymentImage 
-from prefect.runner.storage import GitRepository
-from prefect.client.schemas.schedules import CronSchedule
+from prefect import flow, task
+import asyncio
 import time 
 import random
 
+from prefect import get_client
+
+# def on_running_function(flow, flow_run, state):
+#     if flow_run.run_count <= 0:
+#         print(f"I am an on_running function! The flow is currently in state {state}")
+#     else:
+#         print("skipping on_running function")
 
 @task
-def compute_task():
-    time.sleep(10)
+async def compute_task():
+    async with get_client() as client:
+        dep = await client.read_deployment("799c5f9f-7e84-4257-8f79-493b494ba244")
+        print(dep.name)
 
 @task
-def secondary_task():
+async def secondary_task():
     print("I'm a second task!")
     time.sleep(5)
 
-@flow
-def demo_flow():
-    compute_task()
+@flow(retries=2)
+async def demo_flow():
+    await compute_task()
 
     number = random.randint(1, 10)
 
     if number >= 5:
-        secondary_task()
+        await secondary_task()
 
     return True
 
 
-demo_flow()
-
-
 if __name__ == "__main__":
-    demo_flow.from_source(
-        source=GitRepository(url="https://github.com/masonmenges/mm2-sanbox.git"),
-        entrypoint="flows/demo.py:demo_flow",
-    ).deploy(
-        name="k8s-demo-test",
-        work_pool_name="k8s-minikube-test",
-        image=DeploymentImage(
-                    name="masonm2/temprepo:demo_flow",
-                    dockerfile="./Dockerfile",
-                )
-    )
+    state = asyncio.run(demo_flow())
 
