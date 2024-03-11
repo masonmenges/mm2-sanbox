@@ -22,7 +22,7 @@ async def secondary_task():
 @flow(retries=2, on_running=[cancel_if_already_running])
 async def demo_flow(date: datetime):
     logger = get_run_logger()
-    logger.info(date)
+    logger.info(date.tzinfo)
 
     async with concurrency(names=["concurrency-test-limit-1"]):
         await compute_task()
