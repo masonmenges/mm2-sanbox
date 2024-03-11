@@ -19,7 +19,7 @@ async def secondary_task():
     await asyncio.sleep(5)
 
 
-@flow(retries=2, on_running=[cancel_if_already_running])
+@flow(retries=2)
 async def demo_flow(date: datetime):
     logger = get_run_logger()
     logger.info(date.tzinfo)
