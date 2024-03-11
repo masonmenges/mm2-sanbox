@@ -1,15 +1,12 @@
 from prefect import flow, task
+from prefect.concurrency.asyncio import concurrency
 import asyncio
-import time 
 import random
-
 from prefect import get_client
+from datetime import datetime
 
-# def on_running_function(flow, flow_run, state):
-#     if flow_run.run_count <= 0:
-#         print(f"I am an on_running function! The flow is currently in state {state}")
-#     else:
-#         print("skipping on_running function")
+from state_change_hooks import cancel_if_already_running
+
 
 @task
 async def compute_task():
@@ -19,19 +16,23 @@ async def compute_task():
 
 @task
 async def secondary_task():
-    print("I'm a second task!")
-    time.sleep(5)
+    await asyncio.sleep(5)
 
-@flow(retries=2)
-async def demo_flow():
-    await compute_task()
 
-    number = random.randint(1, 10)
+@flow(retries=2, on_running=[cancel_if_already_running])
+async def demo_flow(date: datetime):
 
-    if number >= 5:
-        await secondary_task()
+    print("test")
 
-    return True
+    async with concurrency(names=["concurrency-test-limit-1"]):
+        await compute_task()
+
+        number = random.randint(1, 10)
+
+        if number >= 5:
+            await secondary_task()
+
+        return True
 
 
 if __name__ == "__main__":
