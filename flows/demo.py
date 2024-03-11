@@ -1,4 +1,4 @@
-from prefect import flow, task
+from prefect import flow, task, get_run_logger
 from prefect.concurrency.asyncio import concurrency
 import asyncio
 import random
@@ -21,8 +21,8 @@ async def secondary_task():
 
 @flow(retries=2, on_running=[cancel_if_already_running])
 async def demo_flow(date: datetime):
-
-    print("test")
+    logger = get_run_logger()
+    logger.info(date)
 
     async with concurrency(names=["concurrency-test-limit-1"]):
         await compute_task()
