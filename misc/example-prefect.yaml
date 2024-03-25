@@ -1,0 +1,77 @@
+definitions:
+  work_pool: &work_pool
+    name: '{{ $WORK_POOL_NAME }}'
+    work_queue_name: '{{ $WORK_QUEUE_NAME }}'
+    job_variables: 
+      image: '{{ $ECR_REPO }}'/{{ ecr-build.image_name }}:{{ get-commit-hash.stdout }}
+  schedule: 
+    - &schedule
+      cron: null
+      timezone: '{{ $TIMEZONE }}'
+      active: true
+  tags: &tags
+    - '{{ $ENV }}'
+    - '{{ $PROJECT_NAME}}'
+
+# Generic metadata about this project
+name: '{{ $PROJECT_NAME }}'
+prefect-version: 2.16.3
+
+# build section allows you to manage and build docker images
+build: 
+- prefect.deployments.steps.run_shell_script:
+    id: get-commit-hash
+    script: git rev-parse --short HEAD
+    stream_output: false
+- prefect_docker.deployments.steps.build_docker_image:
+    id: ecr-build
+    requires: prefect-docker>=0.3.0
+    image_name: masonm2/temprepo
+    tag: '{{ get-commit-hash.stdout }}'
+    dockerfile: Dockerfile
+    push: false
+    platform: linux/amd64
+- prefect.deployments.steps.run_shell_script:
+    id: tag-image-ecr
+    script: docker tag {{ ecr-build.image_name }}:{{ get-commit-hash.stdout }} {{ $ECR_REPO }}/{{ ecr-build.image_name }}:{{ get-commit-hash.stdout }}
+    stream_output: false
+
+# push section allows you to manage if and how this project is uploaded to remote locations
+push:
+- prefect.deployments.steps.run_shell_script:
+    id: get-ecr-pwd
+    script: aws ecr get-login-password --region us-west-2
+    stream_output: false
+- prefect.deployments.steps.run_shell_script:
+    id: ecr-auth-step
+    script: docker login --username AWS --password {{ get-ecr-pwd.stdout }} {{ $ECR_REPO }}
+    stream_output: true  
+- prefect.deployments.steps.run_shell_script:
+    id: push-ecr
+    script: docker push {{ $ECR_REPO }}/{{ ecr-build.image_name }}:{{ get-commit-hash.stdout }}
+    stream_output: true
+
+# pull section allows you to provide instructions for cloning this project in remote locations
+pull:
+- prefect.deployments.steps.git_clone:
+    repository: '{{ $GIT_REPO }}'
+    branch: main
+    access_token: '{{ prefect.blocks.secret.github-pat }}'
+
+# the deployments section allows you to provide configuration for deploying flows
+deployments:
+- name: '{{ $DEPLOYMENT_NAME }}'
+  version: null
+  tags: *tags
+  description: null
+  schedules: 
+    - <<: *schedule
+      cron: '{{ $CRON_STRING }}'
+  flow_name: null
+  entrypoint: '{{ $ENTRYPOINT }}'
+  parameters: null
+  work_pool: *work_pool
+  job_variables:
+    network_configuration:
+      securityGroups: '{{ $SECURITY_GROUPS }}'
+      subnets: '{{ $SUBNETS }}'
