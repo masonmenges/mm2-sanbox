@@ -19,10 +19,12 @@ async def secondary_task():
     await asyncio.sleep(5)
 
 
-@flow(retries=2)
+@flow(retries=2, log_prints=True)
 async def demo_flow(date: datetime):
     logger = get_run_logger()
-    logger.info(date.tzinfo)
+    logger.info("Running demo flow with logger statement")
+
+    print("Running demo flow with print statement")
 
     async with concurrency(names=["concurrency-test-limit-1"]):
         await compute_task()
