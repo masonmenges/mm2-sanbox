@@ -39,12 +39,11 @@ def create_client(
 def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
 
     client = create_client(
-        api_key=PREFECT_API_KEY,
-        base_url=PREFECT_API_URL
+        api_key=PREFECT_API_KEY.value(),
+        base_url=PREFECT_API_URL.value()
     )
 
     if flow_run.deployment_id:
-
         filters = {
                     "sort": "ID_DESC",
                     "offset": 0,
@@ -70,6 +69,8 @@ def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
                     }
         
         flow_runs_r = client.post(url="/flow_runs/filter", json=filters)
+        flow_runs_r.raise_for_status()
+        print(flow_runs_r.json())
 
         # deplyoment_filter = DeploymentFilter(
         #     id=DeploymentFilterId(any_=[flow_run.deployment_id])
