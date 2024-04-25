@@ -1,9 +1,11 @@
 from prefect import flow, task
 from state_change_hooks import cancel_if_already_running
+import time
 
 
 @task
 def compute_task():
+    time.sleep(180)
     print("computing...")
 
 
