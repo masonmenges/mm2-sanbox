@@ -3,19 +3,9 @@ from prefect.settings import (
     PREFECT_API_KEY,
     PREFECT_API_URL,
 )
-from prefect import get_client, get_run_logger
-from prefect.client.schemas.objects import Flow, FlowRun, State, StateType
-from prefect.client.schemas.filters import (
-    FlowRunFilter,
-    DeploymentFilter,
-    DeploymentFilterId,
-    FlowRunFilterStateName,
-    )
-from prefect.client.schemas.sorting import FlowRunSort
+from prefect.client.schemas.objects import Flow, FlowRun, State
 from prefect.states import Cancelling
-
-# from prefect_slack import SlackCredentials
-
+import time
 
 def create_client(
         api_key: str,
@@ -83,34 +73,35 @@ def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
                 f"/flow_runs/{flow_run.id}/set_state",
                 json=dict(state=state.dict(json_compatible=True), force=False),
             )
+        time.sleep(5)
 
 
-async def cancel_if_already_running_async(flow: Flow, flow_run: FlowRun, state: State):
-    async with get_client() as client:
-        if flow_run.deployment_id:
-            deplyoment_filter = DeploymentFilter(
-                id=DeploymentFilterId(any_=[flow_run.deployment_id])
-                )
-            flow_run_filter = FlowRunFilter(
-                state=FlowRunFilterStateName(type=[StateType.RUNNING])
-            )
+# async def cancel_if_already_running_async(flow: Flow, flow_run: FlowRun, state: State):
+#     async with get_client() as client:
+#         if flow_run.deployment_id:
+#             deplyoment_filter = DeploymentFilter(
+#                 id=DeploymentFilterId(any_=[flow_run.deployment_id])
+#                 )
+#             flow_run_filter = FlowRunFilter(
+#                 state=FlowRunFilterStateName(type=[StateType.RUNNING])
+#             )
 
-            flow_runs = await client.read_flow_runs(
-                    deployment_filter=deplyoment_filter,
-                    flow_run_filter=flow_run_filter,
-                    sort=FlowRunSort.START_TIME_DESC,
-                    limit=2
-                )
+#             flow_runs = await client.read_flow_runs(
+#                     deployment_filter=deplyoment_filter,
+#                     flow_run_filter=flow_run_filter,
+#                     sort=FlowRunSort.START_TIME_DESC,
+#                     limit=2
+#                 )
 
-            print(flow_runs)
-            print(len(flow_runs))
+#             print(flow_runs)
+#             print(len(flow_runs))
         
-            if len(flow_runs) > 1:
-                state=Cancelling(name="Skipped", message="A Flow run is currently running this run will be skipped")
-                await client.set_flow_run_state(
-                    flow_run_id=flow_run.id,
-                    state=state
-                )
+#             if len(flow_runs) > 1:
+#                 state=Cancelling(name="Skipped", message="A Flow run is currently running this run will be skipped")
+#                 await client.set_flow_run_state(
+#                     flow_run_id=flow_run.id,
+#                     state=state
+#                 )
 
 
 # async def send_notification_on_failure(flow: Flow, flow_run: FlowRun, state: State):
