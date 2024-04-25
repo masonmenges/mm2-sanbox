@@ -1,5 +1,5 @@
 from prefect import flow, task
-from state_change_hooks import cancel_if_already_running, cancel_if_already_running_async
+from state_change_hooks import cancel_if_already_running
 import time
 
 
