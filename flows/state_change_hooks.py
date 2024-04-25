@@ -72,20 +72,6 @@ def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
         flow_runs_r.raise_for_status()
         print(flow_runs_r.json())
 
-        # deplyoment_filter = DeploymentFilter(
-        #     id=DeploymentFilterId(any_=[flow_run.deployment_id])
-        #     )
-        # flow_run_filter = FlowRunFilter(
-        #     state=FlowRunFilterStateName(type=[StateType.RUNNING])
-        # )
-
-        # flow_runs = client.read_flow_runs(
-        #         deployment_filter=deplyoment_filter,
-        #         flow_run_filter=flow_run_filter,
-        #         sort=FlowRunSort.START_TIME_DESC,
-        #         limit=2
-        #     )
-
         flow_runs_r.raise_for_status()
         flow_runs = flow_runs_r.json()
 
@@ -97,10 +83,6 @@ def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
                 f"/flow_runs/{flow_run.id}/set_state",
                 json=dict(state=state.dict(json_compatible=True), force=False),
             )
-            # client.set_flow_run_state(
-            #     flow_run_id=flow_run.id,
-            #     state=state
-            # )
 
 
 # async def send_notification_on_failure(flow: Flow, flow_run: FlowRun, state: State):

@@ -11,6 +11,7 @@ def compute_task():
 
 @flow(on_running=[cancel_if_already_running])
 def running_flow():
+    time.sleep(20)
     compute_task()
     
 
