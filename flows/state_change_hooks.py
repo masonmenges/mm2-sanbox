@@ -3,7 +3,7 @@ from prefect.settings import (
     PREFECT_API_KEY,
     PREFECT_API_URL,
 )
-from prefect import get_client
+from prefect import get_client, get_run_logger
 from prefect.client.schemas.objects import Flow, FlowRun, State, StateType
 from prefect.client.schemas.filters import (
     FlowRunFilter,
@@ -101,6 +101,11 @@ async def cancel_if_already_running_async(flow: Flow, flow_run: FlowRun, state: 
                     sort=FlowRunSort.START_TIME_DESC,
                     limit=2
                 )
+            
+            logger = get_run_logger()
+
+            logger.info(flow_runs)
+            logger.info(len(flow_runs))
         
             if len(flow_runs) > 1:
                 state=Cancelling(name="Skipped", message="A Flow run is currently running this run will be skipped")
