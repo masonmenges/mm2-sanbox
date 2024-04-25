@@ -14,7 +14,7 @@ from prefect.client.schemas.filters import (
 from prefect.client.schemas.sorting import FlowRunSort
 from prefect.states import Cancelling
 
-from prefect_slack import SlackCredentials
+# from prefect_slack import SlackCredentials
 
 
 def create_client(
@@ -102,17 +102,17 @@ def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
             # )
 
 
-async def send_notification_on_failure(flow: Flow, flow_run: FlowRun, state: State):
-    params_dict = flow_run.parameters
+# async def send_notification_on_failure(flow: Flow, flow_run: FlowRun, state: State):
+#     params_dict = flow_run.parameters
 
-    slack_channel = params_dict["slack_channel"]
+#     slack_channel = params_dict["slack_channel"]
 
-    slack_block = await SlackCredentials.load("slack-creds")
-    client = slack_block.get_client()
-    response = await client.chat_postMessage(
-    channel=slack_channel,
-    text=f"""Prefect flow failed!
-    FlowRun: {flow_run.id}
-    State: {state.name}
-    State_message: {state.message}""")
-    assert response["ok"]
+#     slack_block = await SlackCredentials.load("slack-creds")
+#     client = slack_block.get_client()
+#     response = await client.chat_postMessage(
+#     channel=slack_channel,
+#     text=f"""Prefect flow failed!
+#     FlowRun: {flow_run.id}
+#     State: {state.name}
+#     State_message: {state.message}""")
+#     assert response["ok"]
