@@ -1,5 +1,5 @@
 from prefect import flow, task
-from state_change_hooks import cancel_if_already_running
+from state_change_hooks import cancel_if_already_running, cancel_if_already_running_async
 import time
 
 
@@ -9,7 +9,7 @@ def compute_task():
     print("computing...")
 
 
-@flow(on_running=[cancel_if_already_running])
+@flow(on_running=[cancel_if_already_running_async])
 def running_flow():
     time.sleep(20)
     compute_task()

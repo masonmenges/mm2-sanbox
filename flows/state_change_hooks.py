@@ -85,6 +85,31 @@ def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
             )
 
 
+async def cancel_if_already_running_async(flow: Flow, flow_run: FlowRun, state: State):
+    async with get_client() as client:
+        if flow_run.deployment_id:
+            deplyoment_filter = DeploymentFilter(
+                id=DeploymentFilterId(any_=[flow_run.deployment_id])
+                )
+            flow_run_filter = FlowRunFilter(
+                state=FlowRunFilterStateName(type=[StateType.RUNNING])
+            )
+
+            flow_runs = await client.read_flow_runs(
+                    deployment_filter=deplyoment_filter,
+                    flow_run_filter=flow_run_filter,
+                    sort=FlowRunSort.START_TIME_DESC,
+                    limit=2
+                )
+        
+            if len(flow_runs) > 1:
+                state=Cancelling(name="Skipped", message="A Flow run is currently running this run will be skipped")
+                await client.set_flow_run_state(
+                    flow_run_id=flow_run.id,
+                    state=state
+                )
+
+
 # async def send_notification_on_failure(flow: Flow, flow_run: FlowRun, state: State):
 #     params_dict = flow_run.parameters
 
