@@ -101,11 +101,9 @@ async def cancel_if_already_running_async(flow: Flow, flow_run: FlowRun, state: 
                     sort=FlowRunSort.START_TIME_DESC,
                     limit=2
                 )
-            
-            logger = get_run_logger()
 
-            logger.info(flow_runs)
-            logger.info(len(flow_runs))
+            print(flow_runs)
+            print(len(flow_runs))
         
             if len(flow_runs) > 1:
                 state=Cancelling(name="Skipped", message="A Flow run is currently running this run will be skipped")
