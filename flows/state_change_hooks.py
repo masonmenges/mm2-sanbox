@@ -73,7 +73,7 @@ def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
                 f"/flow_runs/{flow_run.id}/set_state",
                 json=dict(state=state.dict(json_compatible=True), force=False),
             )
-        time.sleep(5)
+        time.sleep(10)
 
 
 # async def cancel_if_already_running_async(flow: Flow, flow_run: FlowRun, state: State):
