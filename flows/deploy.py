@@ -1,28 +1,18 @@
-from prefect.deployments.runner import DeploymentImage 
-from prefect.runner.storage import GitRepository
+from prefect.runner.storage import GitRepository, GitCredentials
 from prefect.client.schemas.schedules import CronSchedule
 
 from demo import demo_flow
 
+schedule_1 = CronSchedule(cron="0 0 * * *")
 
 demo_flow.from_source(
-        source=GitRepository(url="https://github.com/masonmenges/mm2-sanbox.git"),
+        source=GitRepository(
+            url="https://github.com/masonmenges/mm2-sanbox.git"
+            ),
         entrypoint="flows/demo.py:demo_flow",
     ).deploy(
-        name="ecs-demo-test",
-        work_pool_name="ecs-test-pool",
-        image=DeploymentImage(
-                    name="masonm2/temprepo:demo_flow",
-                    dockerfile="./Dockerfile",
-                ),
-        job_variables={
-            "network_configuration": {
-            "SecurityGroups": [
-              "SG2"
-            ],
-            "Subnets": [
-              "SUBNET2"
-            ]
-          }
-        }
+    name="local-demo-test",
+    work_pool_name="k8s-minikube-test",
+    version="local_demo:0.0.1",
+    schedules=[schedule_1]
     )

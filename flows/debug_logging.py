@@ -48,6 +48,10 @@ if __name__ == "__main__":
         name="logging_deployment_1",
         work_pool_name="k8s-minikube-test",
         version="local_demo_1",
+        image=DeploymentImage(
+                            name="masonm2/temprepo:logging_flow",
+                            dockerfile="./Dockerfile",
+                        )
         )
     logging_flow_2.from_source(
             source=GitRepository(
@@ -55,11 +59,8 @@ if __name__ == "__main__":
                 ),
             entrypoint="flows/debug_logging.py:logging_flow_2",
         ).deploy(
-        name="logging_deployment_1",
+        name="logging_deployment_2",
         work_pool_name="k8s-minikube-test",
         version="local_demo_2",
-        image=DeploymentImage(
-                    name="masonm2/temprepo:demo_flow",
-                    dockerfile="./Dockerfile",
-                )
+        image="masonm2/temprepo:logging_flow"            
         )

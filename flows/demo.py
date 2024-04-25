@@ -1,40 +1,29 @@
-from prefect import flow, task, get_run_logger
-from prefect.concurrency.asyncio import concurrency
+from prefect import flow, task
 import asyncio
-import random
 from prefect import get_client
-from datetime import datetime
+from prefect.client.schemas.filters import DeploymentFilterId, FlowRunFilterStateName, FlowRunFilter, DeploymentFilter
+from prefect.client.schemas.sorting import FlowRunSort
 
-from state_change_hooks import cancel_if_already_running
+# from state_change_hooks import cancel_if_already_running
 
 
 @task
 async def compute_task():
     async with get_client() as client:
-        dep = await client.read_deployment("799c5f9f-7e84-4257-8f79-493b494ba244")
-        print(dep.name)
+        # dep = await client.read_deployment("799c5f9f-7e84-4257-8f79-493b494ba244")
 
-@task
-async def secondary_task():
-    await asyncio.sleep(5)
-
+        flow_runs = await client.read_flow_runs(
+            flow_run_filter=FlowRunFilter(state=FlowRunFilterStateName(any_ = ["Completed"])),
+            deployment_filter=DeploymentFilter(id = DeploymentFilterId(any_ = ["799c5f9f-7e84-4257-8f79-493b494ba244"])),
+            sort=FlowRunSort.START_TIME_DESC,
+            )
+        
+        return flow_runs[0].start_time      
 
 @flow(retries=2, log_prints=True)
-async def demo_flow(date: datetime):
-    logger = get_run_logger()
-    logger.info("Running demo flow with logger statement")
+async def demo_flow():
+    last_run_start_time = await compute_task()
 
-    print("Running demo flow with print statement")
-
-    async with concurrency(names=["concurrency-test-limit-1"]):
-        await compute_task()
-
-        number = random.randint(1, 10)
-
-        if number >= 5:
-            await secondary_task()
-
-        return True
 
 
 if __name__ == "__main__":

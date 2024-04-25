@@ -1,0 +1,18 @@
+CRE-Actions
+1 "lia.garrett@tradeweb.com"
+2 "Kelvin.Koh@tradeweb.com","Fancy.Arora@tradeweb.com"
+3 "Anand.Ogale@tradeweb.com"
+4 "carol.luk@tradeweb.com","bridget.silver@tradeweb.com"
+5 Worker Unavailable/down
+
+MD Actions
+1 PAGERDUTY for SPECIFIC FLOWS
+2 v2
+3 Marks Archive Pagerduty alert
+4 email alert for marks Archive
+5 IM_PREFECT_ALERTS TEAMS
+
+DPT Actions
+1 Create New Run if Failed - 4 automations
+2 PAGERDUTY warnings for specific teams, assign tags to flows for a single automation - 5-6
+3 email notifications - 1-2

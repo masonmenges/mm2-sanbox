@@ -30,3 +30,36 @@ rules:
   - "watch"
   - "create"
   - "delete"
+
+
+
+
+triggers:
+- enable: true
+  name: all_complete_flows_triggers_multi_trigger
+  expect:
+- "prefect.flow-run.Completed"
+match:
+prefect.resource.id: 
+parameters:
+event_json: "{{ event.json() }}"
+
+
+
+triggers:
+  - enabled: true
+    match:
+      prefect.resource.id: "prefect.flow-run.*"
+    match_related:
+    expect:
+      - "prefect.flow-run.Completed"
+    parameters:
+      event_json: "{{ event.json() }}"
+    for_each:
+      - "prefect.resource.id"
+    posture: "Reactive"
+    threshold: 1
+    within: 0.0
+    metric: null
+
+

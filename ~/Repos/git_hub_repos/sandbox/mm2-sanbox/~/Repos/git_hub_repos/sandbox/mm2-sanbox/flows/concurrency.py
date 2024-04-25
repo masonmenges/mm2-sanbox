@@ -52,20 +52,3 @@ if __name__ == "__main__":
         schedule=CronSchedule(cron="0/5 * * * *", timezone="America/Denver")
 
     )
-
-
-    params=dict(
-        name=get_deployment_name(flow.name),
-        description=flow_description,
-        work_pool_name=pool_name,
-        work_queue_name=queue_name,
-        image=image,
-        version=version,
-        build=False,
-        push=False,
-        schedule=schedule,
-        job_variables={
-            "memory_limit": 128,
-            "cpu_limit": 250
-        }
-    )

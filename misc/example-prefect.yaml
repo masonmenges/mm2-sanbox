@@ -72,6 +72,8 @@ deployments:
   parameters: null
   work_pool: *work_pool
   job_variables:
+    labels: 
+      - 'test'
     network_configuration:
       securityGroups: '{{ $SECURITY_GROUPS }}'
       subnets: '{{ $SUBNETS }}'

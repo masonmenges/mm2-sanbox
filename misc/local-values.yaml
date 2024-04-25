@@ -1,0 +1,11 @@
+worker:
+  apiConfig: server
+  config:
+    workPool: k8s-local-dev
+  serverApiConfig:
+    apiUrl: http://127.0.0.1:4200/api
+  extraEnvVars:
+    - name: PREFECT_LOGGING_ORION_WHEN_MISSING_FLOW
+      value: ignore
+    - name: PREFECT_LOGGING_LEVEL
+      value: DEBUG
