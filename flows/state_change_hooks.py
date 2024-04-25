@@ -61,7 +61,7 @@ def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
                         "operator": "and_",
                         "id": {
                         "any_": [
-                            flow_run.deployment_id
+                            f"{flow_run.deployment_id}"
                         ]
                         }
                     },
