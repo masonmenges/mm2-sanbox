@@ -19,6 +19,9 @@ class PydanticSampleContract(DataFrameModel):
         dtype = PydanticModel(SampleContract)
         coerce = True
 
+# class SampleContract2(DataFrameModel):
+#     fruit: Series[str]
+
 class SampleContract2(BaseModel):
     fruit: str
 
@@ -27,10 +30,6 @@ class PydanticSampleContract2(DataFrameModel):
     class config:
         dtype = PydanticModel(SampleContract2)
         coerce = True
-
-# class SampleContract2(DataFrameModel):
-#     fruit: Series[str]
-
 
 @task
 def add_fruits(input: DataFrame[PydanticSampleContract]) -> DataFrame[PydanticSampleContract2]:
