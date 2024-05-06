@@ -8,19 +8,24 @@ class SampleContract(BaseModel):
     field_1: str
     field_2: int
 
-
-# class SampleContract(DataFrameModel):
-#     field_1: Series[str]
-#     field_2: Series[int]
-
 class PydanticSampleContract(DataFrameModel):
 
     class config:
         dtype = PydanticModel(SampleContract)
         coerce = True
 
+# class SampleContract(DataFrameModel):
+#     field_1: Series[str]
+#     field_2: Series[int]
+
+# class PydanticContract(BaseModel):
+#     df: DataFrame[SampleContract]
+
 # class SampleContract2(DataFrameModel):
 #     fruit: Series[str]
+
+# class PydanticContract2(BaseModel):
+#     df: DataFrame[SampleContract2]
 
 class SampleContract2(BaseModel):
     fruit: str
@@ -32,7 +37,7 @@ class PydanticSampleContract2(DataFrameModel):
         coerce = True
 
 @task
-def add_fruits(input: DataFrame[PydanticSampleContract]) -> DataFrame[PydanticSampleContract2]:
+def add_fruits(input: PydanticSampleContract) -> PydanticSampleContract2:
     output = input.copy()
     output["fruit"] = ["apple", "banana"]
     return output
@@ -42,8 +47,8 @@ def add_fruits(input: DataFrame[PydanticSampleContract]) -> DataFrame[PydanticSa
     name="test_flow",
 )
 def test_flow(
-    input: DataFrame[PydanticSampleContract] = {"field_1": ["val1", "val2"], "field_2": [1, 2]},  # type: ignore[assignment]
-) -> DataFrame[PydanticSampleContract2]:
+    input: PydanticSampleContract = {"field_1": ["val1", "val2"], "field_2": [1, 2]},  # type: ignore[assignment]
+) -> PydanticSampleContract2:
     logger = get_run_logger()
     logger.info(f"Data at Start of Flow: {input}")
 
