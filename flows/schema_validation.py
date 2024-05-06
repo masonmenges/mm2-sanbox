@@ -1,4 +1,5 @@
-from pandera.typing import DataFrame, Series
+# from pandera.typing import DataFrame, Series
+from pydantic.types import List
 from pydantic import BaseModel
 from pandera import DataFrameModel
 from pandera.engines.pandas_engine import PydanticModel
@@ -14,18 +15,18 @@ from prefect import flow, task, get_run_logger
 #         dtype = PydanticModel(SampleContract)
 #         coerce = True
 
-class SampleContract(DataFrameModel):
-    field_1: Series[str]
-    field_2: Series[int]
+class SampleContract(BaseModel):
+    field_1: List[str]
+    field_2: List[int]
 
-class PydanticSampleContract(BaseModel):
-    df: DataFrame[SampleContract]
+# class PydanticSampleContract(BaseModel):
+#     df: DataFrame[SampleContract]
 
-class SampleContract2(DataFrameModel):
-    fruit: Series[str]
+class SampleContract2(BaseModel):
+    fruit: List[str]
 
-class PydanticSampleContract2(BaseModel):
-    df: DataFrame[SampleContract2]
+# class PydanticSampleContract2(BaseModel):
+#     df: DataFrame[SampleContract2]
 
 # class SampleContract2(BaseModel):
 #     fruit: str
@@ -37,18 +38,18 @@ class PydanticSampleContract2(BaseModel):
 #         coerce = True
 
 @task
-def add_fruits(input: PydanticSampleContract) -> PydanticSampleContract2:
-    output = input.df.copy()
+def add_fruits(input: SampleContract) -> SampleContract2:
+    output = input.model_dump()
     output["fruit"] = ["apple", "banana"]
-    return {"df": output}
+    return output
 
 
 @flow(
     name="test_flow",
 )
 def test_flow(
-    input: PydanticSampleContract = {"df": {"field_1": ["val1", "val2"], "field_2": [1, 2]}},  # type: ignore[assignment]
-) -> PydanticSampleContract2:
+    input: SampleContract = {"field_1": ["val1", "val2"], "field_2": [1, 2]},  # type: ignore[assignment]
+) -> SampleContract2:
     logger = get_run_logger()
     logger.info(f"Data at Start of Flow: {input}")
 
@@ -56,7 +57,7 @@ def test_flow(
 
     logger.info(f"Data at End of Flow: {output}")
 
-    return PydanticSampleContract2.model_validate(output)  # type: ignore[return-value]
+    return SampleContract2.model_validate(output)  # type: ignore[return-value]
 
 
 if __name__ == "__main__":
