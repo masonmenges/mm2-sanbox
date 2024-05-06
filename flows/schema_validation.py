@@ -1,41 +1,15 @@
-# from pandera.typing import DataFrame, Series
 from pydantic import BaseModel
 from pydantic.types import List
-from pandera import DataFrameModel
-from pandera.engines.pandas_engine import PydanticModel
 from prefect import flow, task, get_run_logger
-
-# class SampleContract(BaseModel):
-#     field_1: str
-#     field_2: int
-
-# class PydanticSampleContract(DataFrameModel):
-
-#     class config:
-#         dtype = PydanticModel(SampleContract)
-#         coerce = True
 
 class SampleContract(BaseModel):
     field_1: List[str]
     field_2: List[int]
 
-# class PydanticContract(BaseModel):
-#     df: DataFrame[SampleContract]
 
 class SampleContract2(BaseModel):
     fruit: List[str]
 
-# class PydanticContract2(BaseModel):
-#     df: DataFrame[SampleContract2]
-
-# class SampleContract2(BaseModel):
-#     fruit: str
-
-# class PydanticSampleContract2(DataFrameModel):
-    
-#     class config:
-#         dtype = PydanticModel(SampleContract2)
-#         coerce = True
 
 @task
 def add_fruits(input: SampleContract) -> SampleContract2:
@@ -46,6 +20,7 @@ def add_fruits(input: SampleContract) -> SampleContract2:
 
 @flow(
     name="test_flow",
+    validate_parameters=True
 )
 def test_flow(
     input: SampleContract = {"field_1": ["val1", "val2"], "field_2": [1, 2]},  # type: ignore[assignment]
