@@ -1,6 +1,6 @@
 # from pandera.typing import DataFrame, Series
-from pydantic.types import List
 from pydantic import BaseModel
+from pydantic.types import List
 from pandera import DataFrameModel
 from pandera.engines.pandas_engine import PydanticModel
 from prefect import flow, task, get_run_logger
@@ -19,13 +19,13 @@ class SampleContract(BaseModel):
     field_1: List[str]
     field_2: List[int]
 
-# class PydanticSampleContract(BaseModel):
+# class PydanticContract(BaseModel):
 #     df: DataFrame[SampleContract]
 
 class SampleContract2(BaseModel):
     fruit: List[str]
 
-# class PydanticSampleContract2(BaseModel):
+# class PydanticContract2(BaseModel):
 #     df: DataFrame[SampleContract2]
 
 # class SampleContract2(BaseModel):
