@@ -2,9 +2,21 @@ from prefect import flow, task
 from prefect.runner.storage import GitRepository
 from prefect.tasks import task_input_hash
 from prefect.filesystems import LocalFileSystem, RemoteFileSystem
-from prefect_aws import S3Bucket
+from prefect_aws import S3Bucket, AwsCredentials
 
-@flow(log_prints=True, result_storage=RemoteFileSystem(basepath="s3://mm2-results/"), persist_result=True)
+creds = AwsCredentials.load("mm2-se-dev")
+
+@flow(
+        log_prints=True,
+        result_storage=RemoteFileSystem(
+            basepath="s3://mm2-results/",
+            settings= {
+                "key": creds.credentials.aws_access_key_id,
+                "secret": creds.credentials.aws_secret_access_key.get_secret_value(),
+            }
+            ),
+        persist_result=True
+        )
 def persist_test():
     passing_task()
     failing_task()
