@@ -2,13 +2,14 @@ from prefect import flow, task
 from prefect.runner.storage import GitRepository
 from prefect.tasks import task_input_hash
 from prefect.filesystems import LocalFileSystem
+from prefect_aws import S3Bucket
 
-@flow(log_prints=True, result_storage=LocalFileSystem(basepath="/Users/masonmenges/Desktop/flowresults/"), persist_result=True)
+@flow(log_prints=True, result_storage=S3Bucket.load("mm2-bucket"), persist_result=True)
 def persist_test():
     passing_task()
     failing_task()
 
-@task(persist_result=True, cache_key_fn=task_input_hash, result_storage_key="{flow_run.flow_name}_{flow_run.name}_passing_task.json")
+@task(persist_result=True, result_storage_key="{flow_run.flow_name}_{flow_run.name}_passing_task.json")
 def passing_task():
     print("This task should be skipped on retry")
     return 42
