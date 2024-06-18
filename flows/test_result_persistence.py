@@ -4,7 +4,7 @@ from prefect.tasks import task_input_hash
 from prefect.filesystems import LocalFileSystem, S3
 from prefect_aws import S3Bucket
 
-@flow(log_prints=True, result_storage=S3(bucket_path="mm2-bucket"), persist_result=True)
+@flow(log_prints=True, result_storage=S3Bucket.load("mm2-bucket"), persist_result=True)
 def persist_test():
     passing_task()
     failing_task()
