@@ -1,5 +1,6 @@
 from prefect import flow, task
 from prefect.runner.storage import GitRepository
+from prefect.tasks import task_input_hash
 from prefect.filesystems import LocalFileSystem
 
 @flow(log_prints=True, result_storage=LocalFileSystem(basepath="/Users/masonmenges/Desktop/flowresults/"))
@@ -7,7 +8,7 @@ def persist_test():
     passing_task()
     failing_task()
 
-@task(persist_result=True)
+@task(persist_result=True, cache_key_fn=task_input_hash)
 def passing_task():
     print("This task should be skipped on retry")
     return 42
