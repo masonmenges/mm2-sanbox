@@ -8,7 +8,7 @@ def persist_test():
     passing_task()
     failing_task()
 
-@task(persist_result=True, result_storage=LocalFileSystem(basepath="~/.prefect/storage"))
+@task(persist_result=True, result_storage=LocalFileSystem("~/.prefect/storage"))
 def passing_task():
     print("This task should be skipped on retry")
     return 42
