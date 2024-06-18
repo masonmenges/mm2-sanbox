@@ -9,7 +9,7 @@ def persist_test():
     passing_task()
     failing_task()
 
-@task(persist_result=True, result_storage_key="{flow_run.flow_name}_{flow_run.name}_passing_task.json")
+@task(persist_result=True)
 def passing_task():
     print("This task should be skipped on retry")
     return 42
