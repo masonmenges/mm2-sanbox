@@ -11,8 +11,8 @@ creds = AwsCredentials.load("mm2-se-dev")
         result_storage=RemoteFileSystem(
             basepath="s3://mm2-results/",
             settings= {
-                "key": creds.credentials.aws_access_key_id,
-                "secret": creds.credentials.aws_secret_access_key.get_secret_value(),
+                "key": creds.aws_access_key_id,
+                "secret": creds.aws_secret_access_key.get_secret_value(),
             }
             ),
         persist_result=True
