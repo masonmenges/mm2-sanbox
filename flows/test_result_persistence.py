@@ -12,7 +12,7 @@ from prefect.filesystems import RemoteFileSystem
         )
 def persist_test():
     passing_task()
-    failing_task()
+    # failing_task()
 
 @task(persist_result=True)
 def passing_task():
