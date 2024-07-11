@@ -25,11 +25,11 @@ from prefect.client.schemas.sorting import FlowRunSort
 @flow(retries=2, log_prints=True)
 async def demo_flow(date: str):
     logger = get_run_logger()
-    logger.info(date)
+    logger.info(f"[green]{date}[/]")
     # last_run_start_time = await compute_task()
 
 
 
 if __name__ == "__main__":
-    state = asyncio.run(demo_flow())
+    state = asyncio.run(demo_flow("02/02/2022"))
 
