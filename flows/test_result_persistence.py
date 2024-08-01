@@ -10,14 +10,15 @@ from prefect_aws import S3Bucket
         log_prints=True,
         result_storage=S3Bucket.load("mm2-prefect-s3"),
         persist_result=True,
-        cache_key_fn=task_input_hash,
-        cache_expiration=timedelta(days=1)
         )
 def persist_test():
     passing_task()
     failing_task()
 
-@task(persist_result=True)
+@task(persist_result=True,
+      cache_key_fn=task_input_hash,
+      cache_expiration=timedelta(days=1)
+      )
 def passing_task():
     print("This task should be skipped on retry")
     return 42
