@@ -10,6 +10,7 @@ from prefect_aws import S3Bucket
         log_prints=True,
         result_storage=S3Bucket.load("mm2-prefect-s3"),
         persist_result=True,
+        retries=1
         )
 def persist_test():
     passing_task()
