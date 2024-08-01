@@ -7,7 +7,7 @@ from prefect.runtime import flow_run
 from prefect_aws import S3Bucket
 
 
-def cache_key_from_parent():
+def cache_key_from_parent(context, parameters):
     parent_id = flow_run.get_parent_flow_run_id()
 
 
