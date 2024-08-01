@@ -11,6 +11,9 @@ def cache_key_from_parent(context, parameters):
     parent_id = flow_run.get_parent_flow_run_id()
     return parent_id
 
+@flow
+def subflow_caching():
+    passing_task()
 
 @flow(
         log_prints=True,
@@ -20,7 +23,7 @@ def cache_key_from_parent(context, parameters):
         )
 def persist_test():
     passing_task()
-    failing_task()
+    subflow_caching()
 
 @task(persist_result=True,
       cache_key_fn=cache_key_from_parent,
