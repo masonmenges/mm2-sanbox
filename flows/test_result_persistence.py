@@ -10,7 +10,7 @@ from prefect_aws import S3Bucket
         )
 def persist_test():
     passing_task()
-    # failing_task()
+    failing_task()
 
 @task(persist_result=True)
 def passing_task():
