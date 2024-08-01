@@ -3,7 +3,12 @@ from datetime import timedelta
 from prefect import flow, task
 from prefect.runner.storage import GitRepository
 from prefect.tasks import task_input_hash
+from prefect.runtime import flow_run
 from prefect_aws import S3Bucket
+
+
+def cache_key_from_parent():
+    parent_id = flow_run.get_parent_flow_run_id()
 
 
 @flow(
@@ -17,7 +22,7 @@ def persist_test():
     failing_task()
 
 @task(persist_result=True,
-      cache_key_fn=task_input_hash,
+      cache_key_fn=cache_key_from_parent,
       cache_expiration=timedelta(days=1)
       )
 def passing_task():
