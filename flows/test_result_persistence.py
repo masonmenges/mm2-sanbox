@@ -1,13 +1,11 @@
 from prefect import flow, task
 from prefect.runner.storage import GitRepository
-from prefect.filesystems import RemoteFileSystem
+from prefect_aws import S3Bucket
 
 
 @flow(
         log_prints=True,
-        result_storage=RemoteFileSystem(
-            basepath="s3://mm2-result-persistence/",
-            ),
+        result_storage=S3Bucket.load("mm2-prefect-s3"),
         persist_result=True
         )
 def persist_test():

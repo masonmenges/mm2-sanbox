@@ -38,7 +38,7 @@ async def con_flow():
     tasks_groups = np.array_split(range(40), 5)
     print("Concurrency Task")
     subflows = [concurrent_flow(tasks) for tasks in tasks_groups]
-    await asyncio.gather(*subflows)
+    await asyncio.gather(*subflows, return_exceptions=True)
 
 if __name__ == "__main__":
     start = datetime.datetime.now()
