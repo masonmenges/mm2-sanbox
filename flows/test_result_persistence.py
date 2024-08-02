@@ -1,16 +1,16 @@
 from datetime import timedelta
 
-from prefect import flow, task
+from prefect import flow, task, get_client
 from prefect.runner.storage import GitRepository
-from prefect.tasks import task_input_hash
-from prefect.runtime import flow_run
 from prefect_aws import S3Bucket
 
 
 def cache_key_from_parent(context, parameters):
-    parent_id = context.flow_run_id
-    print(parent_id)
-    return parent_id
+    subflow_id = context.task_run.flow_run_id
+    client = get_client()
+    sub_flow = client.read_flow_run(subflow_id)
+    print(parameters.some_param)
+    return parameters.some_param
 
 @flow
 def subflow_caching():
@@ -30,7 +30,7 @@ def persist_test():
       cache_key_fn=cache_key_from_parent,
       cache_expiration=timedelta(days=1)
       )
-def passing_task():
+def passing_task(some_param: int = 42):
     print("This task should be skipped on retry")
     return 42
 
