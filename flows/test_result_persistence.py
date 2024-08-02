@@ -7,10 +7,10 @@ from prefect_aws import S3Bucket
 
 def cache_key_from_parent(context, parameters):
     subflow_id = context.task_run.flow_run_id
-    client = get_client()
-    sub_flow = client.read_flow_run(subflow_id)
-    print(parameters.some_param)
-    return parameters.some_param
+    # client = get_client()
+    # sub_flow = client.read_flow_run(subflow_id)
+    print(parameters["some_param"])
+    return parameters["some_param"]
 
 @flow
 def subflow_caching():
