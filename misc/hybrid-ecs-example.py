@@ -359,7 +359,7 @@
           }
         ],
         "title": "Task Role ARN",
-        "default": "arn:aws:iam::455346737763:role/ecsTaskExecutionWithS3",
+        "default": "",
         "description": "A role to attach to the task run. This controls the permissions of the task while it is running."
       },
       "container_name": {
@@ -393,7 +393,7 @@
           }
         ],
         "title": "Execution Role ARN",
-        "default": "arn:aws:iam::455346737763:role/ecsTaskExecutionRole",
+        "default": "",
         "description": "An execution role to use for the task. This controls the permissions of the task when it is launching. If this value is not null, it will override the value in the task definition. An execution role must be provided to capture logs from the container."
       },
       "task_definition_arn": {
