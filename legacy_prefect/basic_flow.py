@@ -6,17 +6,14 @@ from random import randint
 
 
 def rand_failure(retry_count=3):
-    randnum = randint(0, 1)
     for i in range(retry_count):
         try:
-            print(f"Attempt {i + 1} of {retry_count}")
-            if randnum == 0:
-                raise ValueError("This is an error")
-            break
+            print(f"Attempt {i} of {retry_count}")
+            raise ValueError("This is an error")
         except Exception as e:
             print(f"Error: {e}")
-            randnum = randint(0, 1)
-            continue
+            if i == retry_count - 1:
+                raise e
     return True
 
 
