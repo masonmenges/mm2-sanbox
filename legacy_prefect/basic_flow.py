@@ -5,24 +5,10 @@ from prefect.runner.storage import GitRepository
 from random import randint
 
 
-def rand_failure(retry_count=3):
-    for i in range(retry_count):
-        try:
-            print(f"Attempt {i} of {retry_count}")
-            raise ValueError("This is an error")
-        except Exception as e:
-            print(f"Error: {e}")
-            if i == retry_count - 1:
-                raise e
-    return True
-
-
-@flow(retries=3, retry_delay_seconds=5, log_prints=True)
+@flow(retries=3, retry_delay_seconds=600, log_prints=True)
 def basic_flow():
     
-    rand_failure()
-    
-    return "This is a success"
+    raise ValueError("This is a test error")
 
 if __name__ == "__main__":
     basic_flow()
