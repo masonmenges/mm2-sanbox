@@ -1,8 +1,6 @@
 from prefect import flow
 
 from prefect.runner.storage import GitRepository
-from prefect.deployments import DeploymentImage
-
 
 from random import randint
 
@@ -35,7 +33,7 @@ if __name__ == "__main__":
     ).deploy(
     name="basic_flow_retries",
     work_pool_name="k8s-minikube-test",
-    image=DeploymentImage(
+    image=DockerImage(
     name="masonm2/temprepo:basic_flow",
     dockerfile="Dockerfile",
     )
