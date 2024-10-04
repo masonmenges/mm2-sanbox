@@ -36,12 +36,10 @@ def majo_v2(prev: str = None):
     p = [{"par": "first"},{"par": "second"}]
     f = majo_test.with_options(task_run_name="majo_test")(return_state=True)
     print(f)
-    g = majo_2.with_options(task_run_name="majo_2").submit(wait_for=[f], return_state=True).result()
+    g = majo_2.with_options(task_run_name="majo_2").submit(wait_for=[f], return_state=True)
     print(g)
     h = majo_3.with_options(task_run_name="majo-[{param[par]}]").map(param=p, wait_for=[g], return_state=True)
     print(h)
-    i = [mapped_run.result() for mapped_run in h]
-    print(i)
     if f.is_failed() or g.is_failed() or any(state.is_failed() for state in i):
         return Failed()
     if g.result().is_completed():
