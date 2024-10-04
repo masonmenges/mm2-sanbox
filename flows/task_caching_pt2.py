@@ -42,10 +42,26 @@ def majo_v2(prev: str = None):
     f = majo_test.with_options(task_run_name="majo_test")()
     g = majo_2.with_options(task_run_name="majo_2").submit(wait_for=[f])
     g.wait()
-    # h = majo_3.with_options(task_run_name="majo-[{param[par]}]").map(param=p, wait_for=[g], return_state=True)
-    # if f.is_failed() or g.is_failed() or any(state.is_failed() for state in h):
-    #     return Failed()
-    if g.is_completed():
+    h = majo_3.with_options(task_run_name="majo-[{param[par]}]").map(param=p, wait_for=[g], return_state=True)
+    if f.is_failed() or g.is_failed() or any(state.result().is_failed() for state in h):
+        return Failed()
+    if g.result().is_completed():
         return Completed()
     else:
         return Failed()
+    
+
+if __name__ == "__main__":
+    majo_v2.from_source(
+        source=GitRepository(
+            url="https://github.com/masonmenges/mm2-sanbox.git",
+            branch="main"
+            ),
+        entrypoint="flows/task_caching_pt2.py:majo_v2",
+    ).deploy(
+        name="task_caching_2",
+        work_pool_name="k8s-minikube-test",
+        image="masonm2/temprepo:demo_3",
+        build=False,
+        push=False
+    )
