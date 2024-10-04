@@ -34,11 +34,11 @@ def majo_3(param):
 @flow(log_prints=True, persist_result=True, validate_parameters=False, result_storage=S3_BUCKET)
 def majo_v2(prev: str = None):
     p = [{"par": "first"},{"par": "second"}]
-    f = majo_test.with_options(task_run_name="majo_test")()
+    f = majo_test.with_options(task_run_name="majo_test")(return_state=True)
     print(f)
-    g = majo_2.with_options(task_run_name="majo_2").submit(wait_for=[f]).result()
+    g = majo_2.with_options(task_run_name="majo_2").submit(wait_for=[f], return_state=True).result()
     print(g)
-    h = majo_3.with_options(task_run_name="majo-[{param[par]}]").map(param=p, wait_for=[g])
+    h = majo_3.with_options(task_run_name="majo-[{param[par]}]").map(param=p, wait_for=[g], return_state=True)
     print(h)
     i = [mapped_run.result() for mapped_run in h]
     print(i)
