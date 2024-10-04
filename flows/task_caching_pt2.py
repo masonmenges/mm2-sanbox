@@ -1,4 +1,5 @@
 from prefect import flow, task
+from prefect import runtime
 from prefect_aws.s3 import S3Bucket, AwsCredentials
 from prefect.runner.storage import GitRepository
 from prefect.client.schemas.schedules import CronSchedule
@@ -24,7 +25,9 @@ def majo_test():
 def majo_2():
     print("this is executing and should Faile")
     time.sleep(10)
-    return Failed(message="task is failed")
+    if runtime.flow_run.run_count > 1:
+        return Completed(message="task is completed")
+    raise ValueError("task is failed")
 
 @task()
 def majo_3(param):
