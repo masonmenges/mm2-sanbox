@@ -12,7 +12,7 @@ cache_config = DEFAULT.configure(
 def some_compute_task(a_number: int):
     return a_number + 1
 
-@flow(persist_result=True)
+@flow(persist_result=True, result_storage=S3Bucket.load("mm2-prefect-s3"))
 def main_flow(a_number: int = 1):
     some_compute_task(a_number)
 
