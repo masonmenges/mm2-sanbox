@@ -13,11 +13,6 @@ CLUSTER = "test-cluster"
 
 LOCATION = "results-v2/"+CID+"/"+FLOW_NAME+"/"+"{flow_run.id}"+"/"+"{task_run.name}"+"/"
 S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
-
-# aws_s3 = S3Bucket(bucket_name="aqfer.preprod.tmp.prefect")
-# aws_s3.save(name="majo-s3", overwrite=True)
-# S3_BUCKET =  S3Bucket.load("majo-s3")
-
 S3_BUCKET.bucket_folder = LOCATION
 
 @task()
@@ -43,8 +38,8 @@ def majo_v2(prev: str = None):
     g = majo_2.with_options(task_run_name="majo_2").submit(wait_for=[f])
     g.wait()
     h = majo_3.with_options(task_run_name="majo-[{param[par]}]").map(param=p, wait_for=[g], return_state=True)
-    h_waited = [state.wait() for state in h]
-    if f.is_failed() or g.is_failed() or any(state.is_failed() for state in h_waited):
+    h.wait()
+    if f.is_failed() or g.is_failed() or any(state.is_failed() for state in h):
         return Failed()
     if g.result().is_completed():
         return Completed()
