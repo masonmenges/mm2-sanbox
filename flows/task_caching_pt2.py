@@ -42,7 +42,7 @@ def majo_v2(prev: str = None):
     print(h)
     if f.is_failed() or g.is_failed() or any(state.is_failed() for state in h):
         return Failed()
-    if g.result().is_completed():
+    if g.is_completed():
         return Completed()
     else:
         return Failed()
