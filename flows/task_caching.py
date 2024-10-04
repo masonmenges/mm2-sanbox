@@ -10,7 +10,7 @@ cache_config = DEFAULT.configure(
     key_storage=s3_bucket,
 )
 
-@task(cache_policy=cache_config)
+@task
 def some_compute_task(a_number: int):
     return a_number + 1
 
