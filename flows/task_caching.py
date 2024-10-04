@@ -1,4 +1,4 @@
-from prefect import flow, task
+from prefect import flow, task, get_run_logger
 from prefect.cache_policies import DEFAULT
 from prefect_aws import S3Bucket
 
@@ -12,6 +12,9 @@ cache_config = DEFAULT.configure(
 
 @task
 def some_compute_task(a_number: int):
+    logger = get_run_logger()
+
+    logger.info(f"Computing {a_number} + 1")
     return a_number + 1
 
 @flow(persist_result=True, result_storage=S3Bucket.load("mm2-prefect-s3", _sync=True))
