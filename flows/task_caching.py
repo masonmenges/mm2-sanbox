@@ -5,14 +5,14 @@ from prefect_aws import S3Bucket
 from prefect.runner.storage import GitRepository
 
 cache_config = DEFAULT.configure(
-    key_storage=S3Bucket.load("mm2-prefect-s3"),
+    key_storage=S3Bucket.load("mm2-prefect-s3", _sync=True),
 )
 
 @task(cache_policy=cache_config)
 def some_compute_task(a_number: int):
     return a_number + 1
 
-@flow(persist_result=True, result_storage=S3Bucket.load("mm2-prefect-s3"))
+@flow(persist_result=True, result_storage=S3Bucket.load("mm2-prefect-s3", _sync=True))
 def main_flow(a_number: int = 1):
     some_compute_task(a_number)
 
