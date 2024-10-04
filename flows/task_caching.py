@@ -4,10 +4,8 @@ from prefect_aws import S3Bucket
 
 from prefect.runner.storage import GitRepository
 
-s3_bucket = S3Bucket.load("mm2-prefect-s3")
-s3_bucket.bucket_folder = "cache_keys"
 cache_config = DEFAULT.configure(
-    key_storage=s3_bucket,
+    key_storage=S3Bucket.load("mm2-prefect-s3"),
 )
 
 @task(cache_policy=cache_config)
