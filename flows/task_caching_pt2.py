@@ -23,10 +23,10 @@ def majo_test():
 
 @task()
 def majo_2():
-    print("this is executing and should Faile")
-    time.sleep(10)
     if runtime.flow_run.run_count > 1:
         return Completed(message="task is completed")
+    print("this is executing and should Fail")
+    time.sleep(10)
     raise ValueError("task is failed")
 
 @task()

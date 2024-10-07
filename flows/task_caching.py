@@ -3,6 +3,7 @@ from prefect.cache_policies import DEFAULT
 from prefect_aws import S3Bucket
 
 from prefect.runner.storage import GitRepository
+import time
 
 s3_bucket = S3Bucket.load("mm2-prefect-s3", _sync=True)
 s3_bucket.bucket_folder = "cache_key"
@@ -15,6 +16,7 @@ def some_compute_task(a_number: int):
     logger = get_run_logger()
 
     logger.info(f"Computing {a_number} + 1")
+    time.sleep(1800)
     return a_number + 1
 
 @flow(persist_result=True, result_storage=S3Bucket.load("mm2-prefect-s3", _sync=True))
