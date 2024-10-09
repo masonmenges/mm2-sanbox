@@ -29,6 +29,7 @@ deployments:
   flow_name: null
   entrypoint: flows/demo.py:demo_flow
   parameters: {}
+  concurrency_limit: 1
   work_pool:
     name: k8s-minikube-test
     work_queue_name: null
