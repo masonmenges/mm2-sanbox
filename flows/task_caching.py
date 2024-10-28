@@ -1,15 +1,16 @@
 from prefect import flow, task, get_run_logger
-from prefect.cache_policies import DEFAULT
+# from prefect.cache_policies import DEFAULT
 from prefect_aws import S3Bucket
 
 from prefect.runner.storage import GitRepository
+from prefect.client.schemas.schedules import CronSchedule
 import time
 
 s3_bucket = S3Bucket.load("mm2-prefect-s3", _sync=True)
 s3_bucket.bucket_folder = "cache_key"
-cache_config = DEFAULT.configure(
-    key_storage=s3_bucket,
-)
+# cache_config = DEFAULT.configure(
+#     key_storage=s3_bucket,
+# )
 
 @task
 def some_compute_task(a_number: int):
@@ -24,6 +25,8 @@ def main_flow(a_number: int = 1):
     some_compute_task(a_number)
 
 if __name__ == "__main__":
+    from prefect.runner.storage import GitRepository
+    from prefect.client.schemas.schedules import CronSchedule
     main_flow.from_source(
         source=GitRepository(
             url="https://github.com/masonmenges/mm2-sanbox.git",
@@ -35,5 +38,6 @@ if __name__ == "__main__":
         work_pool_name="k8s-minikube-test",
         image="masonm2/temprepo:demo_3",
         build=False,
-        push=False
+        push=False,
+        schedules=[CronSchedule(cron="0 0 * * *")],
     )
