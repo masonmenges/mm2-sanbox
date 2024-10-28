@@ -20,7 +20,7 @@ def some_compute_task(a_number: int):
     time.sleep(1800)
     return a_number + 1
 
-@flow(persist_result=True, result_storage=S3Bucket.load("mm2-prefect-s3", _sync=True))
+@flow(persist_result=True, result_storage=S3Bucket.load("mm2-prefect-s3"))
 def main_flow(a_number: int = 1):
     some_compute_task(a_number)
 
