@@ -8,7 +8,10 @@ from prefect.cache_policies import TASK_SOURCE, INPUTS
 from prefect.deployments import run_deployment
 import time
 
-POLICY = INPUTS.configure(key_storage=S3Bucket.load("mm2-prefect-s3", _sync=True, bucket_folder="cache_key_storage"))
+
+S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
+S3_BUCKET.bucket_folder = "storage"
+POLICY = INPUTS.configure(key_storage=S3_BUCKET)
 
 
 @task(cache_policy=POLICY)
@@ -34,7 +37,7 @@ def majo_3(param):
     print("value : {}".format(param["par"]))
     return True
 
-@flow(result_storage=S3Bucket.load("mm2-prefect-s3", _sync=True, bucket_folder="results"), persist_result=True)
+@flow(result_storage=S3_BUCKET, persist_result=True)
 def caching_test(prev: str = "test_param"):
     logger = get_run_logger()
     p = [{"par": "first"},{"par": "second"}]
