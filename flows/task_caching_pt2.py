@@ -10,7 +10,7 @@ import time
 
 
 S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
-POLICY = INPUTS.configure(key_storage=S3_BUCKET)
+POLICY = INPUTS.configure(key_storage=S3Bucket.load("mm2-prefect-s3"))
 
 
 @task(cache_policy=POLICY)
