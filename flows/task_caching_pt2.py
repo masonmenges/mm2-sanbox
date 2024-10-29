@@ -7,13 +7,8 @@ from prefect.states import Failed, Completed
 from prefect.cache_policies import TASK_SOURCE, INPUTS
 import time
 
-CID = "test"
-FLOW_NAME ="caching_test"
 
-
-LOCATION = "results/"+CID+"/"+FLOW_NAME+"/"+"{flow_run.id}"+"/"
 S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
-S3_BUCKET.bucket_folder = LOCATION
 POLICY = INPUTS.configure(key_storage=S3_BUCKET)
 
 
