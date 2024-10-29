@@ -12,14 +12,14 @@ S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
 POLICY = INPUTS.configure(key_storage=S3_BUCKET)
 
 
-@task(cache_policy=POLICY, persist_result=True)
+@task(cache_policy=POLICY)
 def task_1(param1):
     logger = get_run_logger()
     logger.info("this is executing and should completed successfully")
     logger.info(f"param1: {param1}")
     return True
 
-@task(cache_policy=POLICY, persist_result=True)
+@task(cache_policy=POLICY)
 def task_2(param2):
     logger = get_run_logger()
     logger.info(f"{param2}")
@@ -35,7 +35,7 @@ def majo_3(param):
     print("value : {}".format(param["par"]))
     return True
 
-@flow(result_storage=S3_BUCKET)
+@flow(result_storage=S3_BUCKET, persist_result=True)
 def caching_test(prev: str = "test_param"):
     logger = get_run_logger()
     p = [{"par": "first"},{"par": "second"}]
@@ -48,7 +48,6 @@ def caching_test(prev: str = "test_param"):
     if any(state.is_failed() for state in h):
         return Failed("Mapped task failed")
 
-    
 
 if __name__ == "__main__":
     caching_test.from_source(
