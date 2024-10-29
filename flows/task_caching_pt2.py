@@ -13,6 +13,8 @@ S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
 S3_BUCKET.bucket_folder = "cache_key_storage"
 POLICY = INPUTS.configure(key_storage=S3_BUCKET)
 
+S3_BUCKET.bucket_folder = "result_storage"
+
 
 @task(cache_policy=POLICY)
 def task_1(param1):
