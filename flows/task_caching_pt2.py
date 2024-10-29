@@ -11,13 +11,13 @@ CID = "test"
 FLOW_NAME ="caching_test"
 
 
-LOCATION = "results-v2/"+CID+"/"+FLOW_NAME+"/"+"{flow_run.id}"+"/"
+LOCATION = "results/"+CID+"/"+FLOW_NAME+"/"+"{flow_run.id}"+"/"
 S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
 S3_BUCKET.bucket_folder = LOCATION
 POLICY = INPUTS.configure(key_storage=S3_BUCKET)
 
 
-@task()
+@task(cache_policy=POLICY)
 def task_1(param1):
     logger = get_run_logger()
     logger.info("this is executing and should completed successfully")
@@ -40,7 +40,7 @@ def majo_3(param):
     print("value : {}".format(param["par"]))
     return True
 
-@flow(persist_result=True, result_storage=S3_BUCKET)
+@flow(result_storage=S3_BUCKET)
 def caching_test(prev: str = "test_param"):
     logger = get_run_logger()
     p = [{"par": "first"},{"par": "second"}]
