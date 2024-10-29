@@ -14,14 +14,14 @@ S3_BUCKET.bucket_folder = "storage"
 POLICY = INPUTS
 
 
-@task(cache_policy=POLICY)
+@task(cache_policy=POLICY, result_storage=S3_BUCKET, persist_result=True)
 def task_1(param1):
     logger = get_run_logger()
     logger.info("this is executing and should completed successfully")
     logger.info(f"param1: {param1}")
     return True
 
-@task(cache_policy=POLICY)
+@task(cache_policy=POLICY, result_storage=S3_BUCKET, persist_result=True)
 def task_2(param2):
     logger = get_run_logger()
     logger.info(f"{param2}")
@@ -37,7 +37,7 @@ def majo_3(param):
     print("value : {}".format(param["par"]))
     return True
 
-@flow(result_storage=S3_BUCKET, persist_result=True)
+@flow()
 def caching_test(prev: str = "test_param"):
     logger = get_run_logger()
     p = [{"par": "first"},{"par": "second"}]
