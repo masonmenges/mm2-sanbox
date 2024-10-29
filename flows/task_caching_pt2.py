@@ -5,11 +5,12 @@ from prefect.runner.storage import GitRepository
 from prefect.client.schemas.schedules import CronSchedule
 from prefect.states import Failed, Completed
 from prefect.cache_policies import TASK_SOURCE, INPUTS
+from prefect.deployments import run_deployment
 import time
 
 
 S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
-POLICY = INPUTS
+POLICY = INPUTS.configure(key_storage=S3_BUCKET)
 
 
 @task(cache_policy=POLICY)
