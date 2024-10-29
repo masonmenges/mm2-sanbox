@@ -37,7 +37,7 @@ def majo_3(param):
     return True
 
 @flow(log_prints=True, persist_result=True, result_storage=S3_BUCKET)
-def caching_test(prev: str = None):
+def caching_test(prev: str = "test_param"):
     p = [{"par": "first"},{"par": "second"}]
     f = task_1()
     print(f)
