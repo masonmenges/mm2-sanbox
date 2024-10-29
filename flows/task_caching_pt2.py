@@ -1,4 +1,4 @@
-from prefect import flow, task
+from prefect import flow, task, get_run_logger
 from prefect import runtime
 from prefect_aws.s3 import S3Bucket
 from prefect.runner.storage import GitRepository
@@ -18,16 +18,20 @@ POLICY = INPUTS.configure(key_storage=S3_BUCKET)
 
 
 @task()
-def task_1():
-    print("this is executing and should completed successfully")
+def task_1(param1):
+    logger = get_run_logger()
+    logger.info("this is executing and should completed successfully")
+    logger.info(f"param1: {param1}")
     return True
 
 @task(cache_policy=POLICY)
-def task_2():
+def task_2(param2):
+    logger = get_run_logger()
+    logger.info(f"{param2}")
     if runtime.flow_run.run_count > 1:
-        print("this is executing and should Complete")
+        logger.info("this is executing and should Complete")
         return True
-    print("this is executing and should Fail")
+    logger.error("this is executing and should Fail")
     time.sleep(10)
     raise ValueError("task is failed")
 
@@ -36,12 +40,13 @@ def majo_3(param):
     print("value : {}".format(param["par"]))
     return True
 
-@flow(log_prints=True, persist_result=True, result_storage=S3_BUCKET)
+@flow(persist_result=True, result_storage=S3_BUCKET)
 def caching_test(prev: str = "test_param"):
+    logger = get_run_logger()
     p = [{"par": "first"},{"par": "second"}]
-    f = task_1()
-    print(f)
-    g = task_2()
+    f = task_1(prev)
+    logger.info(f)
+    g = task_2(f"{prev} - {f}")
     print(g)
     h = majo_3.map(param=p, wait_for=[g], return_state=True)
     print(h)
