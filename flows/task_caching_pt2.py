@@ -12,14 +12,14 @@ S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
 POLICY = INPUTS.configure(key_storage=S3_BUCKET)
 
 
-@task(cache_policy=POLICY)
+@task(cache_policy=POLICY, persist_result=True)
 def task_1(param1):
     logger = get_run_logger()
     logger.info("this is executing and should completed successfully")
     logger.info(f"param1: {param1}")
     return True
 
-@task(cache_policy=POLICY)
+@task(cache_policy=POLICY, persist_result=True)
 def task_2(param2):
     logger = get_run_logger()
     logger.info(f"{param2}")
