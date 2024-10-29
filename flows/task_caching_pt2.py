@@ -8,24 +8,25 @@ from prefect.cache_policies import TASK_SOURCE, INPUTS
 import time
 
 CID = "test"
-FLOW_NAME ="test"
-SANDBOX = "test"
-CLUSTER = "test-cluster"
+FLOW_NAME ="caching_test"
 
-LOCATION = "results-v2/"+CID+"/"+FLOW_NAME+"/"+"{flow_run.id}"+"/"+"{task_run.name}"+"/"
+
+LOCATION = "results-v2/"+CID+"/"+FLOW_NAME+"/"+"{flow_run.id}"+"/"
 S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
 S3_BUCKET.bucket_folder = LOCATION
+POLICY = INPUTS.configure(key_storage=S3_BUCKET)
+
 
 @task()
-def majo_test():
+def task_1():
     print("this is executing and should completed successfully")
-    return Completed(message="task is completed")
+    return True
 
-@task()
-def majo_2():
+@task(cache_policy=POLICY)
+def task_2():
     if runtime.flow_run.run_count > 1:
         print("this is executing and should Complete")
-        return Completed(message="task is completed")
+        return True
     print("this is executing and should Fail")
     time.sleep(10)
     raise ValueError("task is failed")
@@ -33,32 +34,29 @@ def majo_2():
 @task()
 def majo_3(param):
     print("value : {}".format(param["par"]))
-    return Completed(message="task is completed")
+    return True
 
-@flow(log_prints=True, persist_result=True, validate_parameters=False, result_storage=S3_BUCKET)
-def majo_v2(prev: str = None):
+@flow(log_prints=True, persist_result=True, result_storage=S3_BUCKET)
+def caching_test(prev: str = None):
     p = [{"par": "first"},{"par": "second"}]
-    f = majo_test.with_options(task_run_name="majo_test")(return_state=True)
+    f = task_1()
     print(f)
-    g = majo_2.with_options(task_run_name="majo_2").submit(wait_for=[f], return_state=True)
+    g = task_2()
     print(g)
-    h = majo_3.with_options(task_run_name="majo-[{param[par]}]").map(param=p, wait_for=[g], return_state=True)
+    h = majo_3.map(param=p, wait_for=[g], return_state=True)
     print(h)
-    if f.is_failed() or g.is_failed() or any(state.is_failed() for state in h):
-        return Failed()
-    if g.is_completed():
-        return Completed()
-    else:
-        return Failed()
+    if any(state.is_failed() for state in h):
+        return Failed("Mapped task failed")
+
     
 
 if __name__ == "__main__":
-    majo_v2.from_source(
+    caching_test.from_source(
         source=GitRepository(
             url="https://github.com/masonmenges/mm2-sanbox.git",
             branch="main"
             ),
-        entrypoint="flows/task_caching_pt2.py:majo_v2",
+        entrypoint="flows/task_caching_pt2.py:caching_test",
     ).deploy(
         name="task_caching_2",
         work_pool_name="k8s-minikube-test",
