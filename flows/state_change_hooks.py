@@ -26,6 +26,9 @@ def create_client(
     return httpx.Client(**httpx_settings) 
 
 
+def cancel_dbt_job(flow: Flow, flow_run: FlowRun, state: State):
+    pass
+
 def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
 
     client = create_client(

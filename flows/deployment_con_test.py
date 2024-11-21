@@ -9,7 +9,7 @@ def some_compute_task():
 
 @flow
 def main_flow():
-    some_compute_task()
+    some_compute_task.map(return_state=True)
 
 if __name__ == "__main__":
     main_flow.from_source(

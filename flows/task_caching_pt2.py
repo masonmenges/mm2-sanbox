@@ -9,6 +9,11 @@ from prefect.deployments import run_deployment
 import time
 
 
+from prefect_dbt.cloud.jobs import trigger_dbt_cloud_job_run_and_wait_for_completion
+from state_change_hooks import cancel_dbt_job
+
+trigger_dbt_cloud_job_run_and_wait_for_completion.with_options(on_cancellation=[cancel_dbt_job])
+
 S3_BUCKET = S3Bucket.load("mm2-prefect-s3", _sync=True)
 S3_BUCKET.bucket_folder = "storage"
 POLICY = INPUTS
