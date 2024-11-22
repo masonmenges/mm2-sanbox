@@ -4,6 +4,8 @@ import os
 
 @flow(log_prints=True)
 def env_vars_flow():
+    print(os.environ.get("yaml_env_var_1"))
+    print(os.environ.get("yaml_env_var_2"))
     print(os.environ.get("env_var_job_var_1"))
     print(os.environ.get("env_var_job_var_2"))
     print(os.environ.get("work_pool_env_1"))
@@ -17,9 +19,9 @@ if __name__ == "__main__":
         entrypoint="flows/env_vars.py:env_vars_flow"
     ).deploy(
         name="prefect_env_vars_test",
-        work_pool_name="local_cloud_test",
-        job_variables={
-            "env_var_job_var_1": "value_1",
-            "env_var_job_var_2": "value_2"
-        }
+        work_pool_name="local-cloud-test",
+        job_variables={ "env": {
+            "env_var_job_var_1": "job_value_1",
+            "env_var_job_var_2": "job_value_2"
+        }}
     )
