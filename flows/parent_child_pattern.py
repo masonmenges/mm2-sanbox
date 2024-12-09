@@ -16,7 +16,7 @@ async def parent_flow():
     company_batches = np.array_split(companies_list, 10)
 
     for batch in company_batches:
-        processing_companies = [run_deployment(name="child_flow/process_company", parameters={"company_id": id})
+        processing_companies = [run_deployment(name="child-flow/process_company", parameters={"company_id": id})
          for id in batch]
         
         await asyncio.gather(*processing_companies)
