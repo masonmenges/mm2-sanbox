@@ -1,4 +1,4 @@
-from prefect import flow
+from prefect import flow, get_run_logger
 from prefect.runner.storage import GitRepository  
 import os
 
@@ -19,7 +19,7 @@ if __name__ == "__main__":
         entrypoint="flows/env_vars.py:env_vars_flow"
     ).deploy(
         name="prefect_env_vars_test",
-        work_pool_name="local-cloud-test",
+        work_pool_name="ecs-test-pool",
         job_variables={ "env": {
             "env_var_job_var_1": "job_value_1",
             "env_var_job_var_2": "job_value_2"
