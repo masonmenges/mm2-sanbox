@@ -10,7 +10,7 @@ def env_vars_flow():
 
     logger = get_run_logger()
 
-    gcpsecret_block = GcpSecret.load("mm2-test-secret", _sync=True)
+    gcpsecret_block = GcpSecret.load("mm2-test-secret", _sync=True, validate=False)
     logger.info(gcpsecret_block.read_secret())
 
     print(os.environ.get("yaml_env_var_1"))
