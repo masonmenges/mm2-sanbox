@@ -20,17 +20,18 @@ def env_vars_flow():
     print(os.environ.get("work_pool_env_1"))
 
 if __name__ == "__main__":
-    env_vars_flow.from_source(
-        source=GitRepository(
-            url="https://github.com/masonmenges/mm2-sanbox.git",
-            branch="main"
-        ),
-        entrypoint="flows/env_vars.py:env_vars_flow"
-    ).deploy(
-        name="prefect_env_vars_test_vertex_ai",
-        work_pool_name="mm2-vertextai-testing",
-        job_variables={ "env": {
-            "env_var_job_var_1": "job_value_1",
-            "env_var_job_var_2": "job_value_2"
-        }}
-    )
+    # env_vars_flow.from_source(
+    #     source=GitRepository(
+    #         url="https://github.com/masonmenges/mm2-sanbox.git",
+    #         branch="main"
+    #     ),
+    #     entrypoint="flows/env_vars.py:env_vars_flow"
+    # ).deploy(
+    #     name="prefect_env_vars_test_vertex_ai",
+    #     work_pool_name="mm2-vertextai-testing",
+    #     job_variables={ "env": {
+    #         "env_var_job_var_1": "job_value_1",
+    #         "env_var_job_var_2": "job_value_2"
+    #     }}
+    # )
+    env_vars_flow()
