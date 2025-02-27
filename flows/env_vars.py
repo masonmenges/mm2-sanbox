@@ -16,6 +16,7 @@ def env_vars_flow():
     print(os.environ.get("yaml_env_var_1"))
     print(os.environ.get("yaml_env_var_2"))
     print(os.environ.get("env_var_job_var_1"))
+    print(os.getenv("env_var_job_var_1"))
     print(os.environ.get("env_var_job_var_2"))
     print(os.environ.get("work_pool_env_1"))
 
