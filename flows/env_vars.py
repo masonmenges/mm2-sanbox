@@ -5,7 +5,7 @@ import os
 
 # from flows.task_caching import some_compute_task
 
-@flow(log_prints=True)
+@flow(log_prints=True, flow_run_name="TESTING ENV VARS")
 def env_vars_flow():
 
     logger = get_run_logger()
@@ -21,18 +21,15 @@ def env_vars_flow():
     print(os.environ.get("test_secret"))
 
 if __name__ == "__main__":
-    # env_vars_flow.from_source(
-    #     source=GitRepository(
-    #         url="https://github.com/masonmenges/mm2-sanbox.git",
-    #         branch="main"
-    #     ),
-    #     entrypoint="flows/env_vars.py:env_vars_flow"
-    # ).deploy(
-    #     name="prefect_env_vars_test_vertex_ai",
-    #     work_pool_name="mm2-vertextai-testing",
-    #     job_variables={ "env": {
-    #         "env_var_job_var_1": "job_value_1",
-    #         "env_var_job_var_2": "job_value_2"
-    #     }}
-    # )
-    env_vars_flow()
+    env_vars_flow.from_source(
+        source=GitRepository(
+            url="https://github.com/masonmenges/mm2-sanbox.git",
+            branch="main"
+        ),
+        entrypoint="flows/env_vars.py:env_vars_flow"
+    ).deploy(
+        name="prefect_env_vars_test",
+        work_pool_name="k8s-minikube-test",
+        job_variables={ "env": {{"name": "env_var_job_var_1", "value": "job_var1"}}}
+    )
+    # env_vars_flow()
