@@ -10,15 +10,15 @@ def env_vars_flow():
 
     logger = get_run_logger()
 
-    gcpsecret_block = GcpSecret.load("mm2-test-secret", _sync=True, validate=False)
-    logger.info(gcpsecret_block.read_secret())
+    # gcpsecret_block = GcpSecret.load("mm2-test-secret", _sync=True, validate=False)
+    # logger.info(gcpsecret_block.read_secret())
 
     print(os.environ.get("yaml_env_var_1"))
     print(os.environ.get("yaml_env_var_2"))
     print(os.environ.get("env_var_job_var_1"))
-    print(os.getenv("env_var_job_var_1"))
     print(os.environ.get("env_var_job_var_2"))
     print(os.environ.get("work_pool_env_1"))
+    print(os.environ.get("test_secret"))
 
 if __name__ == "__main__":
     # env_vars_flow.from_source(
