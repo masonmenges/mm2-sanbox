@@ -1,6 +1,6 @@
 from prefect import flow, get_run_logger
 from prefect.runner.storage import GitRepository  
-from prefect_gcp.secret_manager import GcpSecret
+# from prefect_gcp.secret_manager import GcpSecret
 import os
 
 # from flows.task_caching import some_compute_task
