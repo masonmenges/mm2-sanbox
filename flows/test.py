@@ -12,7 +12,7 @@ def succeed(*args):
 
     return secret_block.get()
  
-@flow(result_storage="~/results/local")
+@flow
 def final_state():
     _one = succeed()
     print(_one)
@@ -30,5 +30,5 @@ if __name__ == "__main__":
     ).deploy(
     name="secret state test", 
     work_pool_name="k8s-minikube-test",
-    job_variables={"env": {"PREFECT_RESULTS_PERSIST_BY_DEFAULT": True}, "image": "prefecthq/prefect:3.2.1-python3.12"}
+    job_variables={"env": {"PREFECT_RESULTS_PERSIST_BY_DEFAULT": True, "PREFECT_LOCAL_STORAGE_PATH": "~/results/local"}, "image": "prefecthq/prefect:3.2.1-python3.12"}
     )
