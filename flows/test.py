@@ -1,5 +1,6 @@
 from prefect import flow, task
 from prefect.blocks.system import Secret
+from prefect.runner.storage import GitRepository
 
 @task
 def fail(*args):
@@ -11,7 +12,7 @@ def succeed(*args):
 
     return secret_block.get()
  
-@flow
+@flow(result_storage="~/results/local")
 def final_state():
     _one = succeed()
     print(_one)
@@ -22,4 +23,12 @@ def final_state():
     return _three
  
 if __name__ == "__main__":
-    test = final_state()
+    final_state.from_source(GitRepository(
+            url="https://github.com/masonmenges/mm2-sanbox.git"
+            ),
+    entrypoint="flows/test.py:final_state",
+    ).deploy(
+    name="secret state test", 
+    work_pool_name="k8s-minikube-test",
+    job_variables={"env": {"PREFECT_RESULTS_PERSIST_BY_DEFAULT": True}, "image": "prefecthq/prefect:3.2.1-python3.12"}
+    )
