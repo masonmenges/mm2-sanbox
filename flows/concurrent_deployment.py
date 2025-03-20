@@ -24,21 +24,23 @@ async def parent_flow():
 
     flow_runs = [flow_run.result() for flow_run in flow_run_futures]
 
-    for x in flow_runs:
-        result_val = await x.state.result(fetch=True)
-        print(result_val)
+    for run in flow_runs:
+        run_state = run.state
+        run_result = await run_state.result(fetch=True)
+        print(run_result)
 
 
 if __name__ == "__main__":
-    parent_flow.from_source(
-            source=GitRepository(
-                url="https://github.com/masonmenges/mm2-sanbox.git"
-                ),
-            entrypoint="flows/concurrent_deployment.py:parent_flow",
-        ).deploy(
-        name="parent_run_deployment_test",
-        work_pool_name="k8s-minikube-test",
-        image="masonm2/temprepo:withcode03132025.2",
-        build=False,
-        push=False
-        )
+    # parent_flow.from_source(
+    #         source=GitRepository(
+    #             url="https://github.com/masonmenges/mm2-sanbox.git"
+    #             ),
+    #         entrypoint="flows/concurrent_deployment.py:parent_flow",
+    #     ).deploy(
+    #     name="parent_run_deployment_test",
+    #     work_pool_name="k8s-minikube-test",
+    #     image="masonm2/temprepo:withcode03132025.2",
+    #     build=False,
+    #     push=False
+    #     )
+    asyncio.run(parent_flow())
