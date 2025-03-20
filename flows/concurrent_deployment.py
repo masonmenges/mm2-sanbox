@@ -5,6 +5,7 @@ from prefect.client.schemas import FlowRun
 from prefect.deployments import run_deployment
 from prefect.task_runners import ThreadPoolTaskRunner
 from prefect.runner.storage import GitRepository
+from prefect_aws.deployments.steps import push_to_s3, pull_from_s3
 
 
 @task
