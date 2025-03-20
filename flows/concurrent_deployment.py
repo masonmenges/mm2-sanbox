@@ -25,7 +25,7 @@ async def parent_flow():
     flow_runs = [flow_run.result() for flow_run in flow_run_futures]
 
     for run in flow_runs:
-        run_state = run.state
+        run_state = run.result().state
         run_result = await run_state.result(fetch=True)
         print(run_result)
 
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     #     ).deploy(
     #     name="parent_run_deployment_test",
     #     work_pool_name="k8s-minikube-test",
-    #     image="masonm2/temprepo:withcode03132025.2",
+    #     image="masonm2/temprepo:withcode03132025.3",
     #     build=False,
     #     push=False
     #     )
