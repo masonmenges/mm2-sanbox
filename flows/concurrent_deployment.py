@@ -8,27 +8,16 @@ from prefect.runner.storage import GitRepository
 from prefect_aws.deployments.steps import push_to_s3, pull_from_s3
 
 
-@task
-def run_deployment_of_child_flow(deployment_name: str) -> FlowRun:
-    flow_run = run_deployment(
-        name=deployment_name
-    )
-    return flow_run  # noqa
-
-
 @flow(task_runner=ThreadPoolTaskRunner(max_workers=5), log_prints=True)
-async def parent_flow():
+def parent_flow():
     # run the run_deployment_of_child_flow task via the ThreadPoolTaskRunner and wait for the
     #  result and return the result
-    flow_run_futures = run_deployment_of_child_flow.map(["persist-test/result_persistence-test_3"])
 
-    flow_runs = [flow_run.result() for flow_run in flow_run_futures]
+    run = run_deployment(
+        name="persist-test/result_persistence-test_3"
+    )
 
-    for run in flow_runs:
-        run_state = run.result().state
-        run_result = await run_state.result(fetch=True)
-        print(run_result)
-
+    print(run.state.result(fetch=True))
 
 if __name__ == "__main__":
     # parent_flow.from_source(
@@ -43,4 +32,4 @@ if __name__ == "__main__":
     #     build=False,
     #     push=False
     #     )
-    asyncio.run(parent_flow())
+    parent_flow()
