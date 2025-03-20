@@ -44,5 +44,5 @@ if __name__=="__main__":
             entrypoint="flows/test_result_persistence.py:persist_test",
         ).deploy(
         name="result_persistence-test_3.x",
-        work_pool_name="default",
+        work_pool_name="k8s-minikube-test",
         )
