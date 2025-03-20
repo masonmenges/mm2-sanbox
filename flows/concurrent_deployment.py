@@ -20,7 +20,7 @@ def run_deployment_of_child_flow(deployment_name: str) -> FlowRun:
 async def parent_flow():
     # run the run_deployment_of_child_flow task via the ThreadPoolTaskRunner and wait for the
     #  result and return the result
-    flow_run_futures = await run_deployment_of_child_flow.map(["persist-test/result_persistence-test_3"])
+    flow_run_futures = run_deployment_of_child_flow.map(["persist-test/result_persistence-test_3"])
 
     flow_runs = [flow_run.result() for flow_run in flow_run_futures]
 
