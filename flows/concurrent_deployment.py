@@ -15,7 +15,7 @@ def run_deployment_of_child_flow(deployment_name: str) -> FlowRun:
     return flow_run  # noqa
 
 
-@flow(task_runner=ThreadPoolTaskRunner(max_workers=5))
+@flow(task_runner=ThreadPoolTaskRunner(max_workers=5), log_prints=True)
 async def parent_flow():
     # run the run_deployment_of_child_flow task via the ThreadPoolTaskRunner and wait for the
     #  result and return the result
