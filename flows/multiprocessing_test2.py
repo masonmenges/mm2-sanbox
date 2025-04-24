@@ -3,7 +3,7 @@ from prefect.runner.storage import GitRepository
 
 import multiprocessing
 
-from multiprocessing import Queue
+from multiprocessing import Queue, Process
 
 import gzip
 
@@ -29,9 +29,7 @@ def test_multiprocessing_flow(buf = """I'm a random test",
     print(f"Starting {procs} gzip jobs.")
 
     for num in range(procs):
-        # worker = Process(target=gzip_worker, args=(buf, num, procs, queue))
-        ctx = multiprocessing.get_context("spawn")
-        worker = ctx.Process(target=gzip_worker, args=(buf, num, procs, queue))
+        worker = Process(target=gzip_worker, args=(buf, num, procs, queue))
         worker.start()
         workers.append(worker)
 
