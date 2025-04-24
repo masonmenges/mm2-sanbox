@@ -6,8 +6,6 @@ import multiprocessing
 from multiprocessing import Queue, Process
 
 import gzip
-
-multiprocessing.set_start_method("spawn")
  
 @flow
 def test_multiprocessing_flow(buf = """I'm a random test",
@@ -20,7 +18,8 @@ def test_multiprocessing_flow(buf = """I'm a random test",
         The weather is nice today,
         Random test string number nine,
         Last but not least, the final test string""".encode(), procs = 10):
-    
+
+    multiprocessing.set_start_method("spawn")
 
     queue = Queue()
 
