@@ -7,6 +7,7 @@ from multiprocessing import Queue
 
 import gzip
 
+multiprocessing.set_start_method("spawn")
  
 @flow
 def test_multiprocessing_flow(buf = """I'm a random test",
@@ -20,7 +21,6 @@ def test_multiprocessing_flow(buf = """I'm a random test",
         Random test string number nine,
         Last but not least, the final test string""".encode(), procs = 10):
     
-    multiprocessing.set_start_method("spawn")
 
     queue = Queue()
 
@@ -29,15 +29,10 @@ def test_multiprocessing_flow(buf = """I'm a random test",
     print(f"Starting {procs} gzip jobs.")
 
     for num in range(procs):
-
         # worker = Process(target=gzip_worker, args=(buf, num, procs, queue))
-
         ctx = multiprocessing.get_context("spawn")
-
         worker = ctx.Process(target=gzip_worker, args=(buf, num, procs, queue))
-
         worker.start()
-
         workers.append(worker)
 
     print("gzip jobs submitted. Collecting results.")
@@ -45,34 +40,23 @@ def test_multiprocessing_flow(buf = """I'm a random test",
     parts = []
 
     for _ in workers:
-
         parts.append(queue.get())
 
     for worker in workers:
-
         worker.join()
-
         if worker.exitcode != 0:
-
             raise RuntimeError(f'A worker returned {worker.exitcode} exit code')
-
+        
     parts.sort(key=lambda x: x[0])
-
     print("Return zipped results as a list.")
-
     return [part[1] for part in parts]
 
    
 def gzip_worker(buf, num, procs, queue):
-
     size = len(buf)
-
     start = int(size / procs * num)
-
     end = int(size / procs * (num + 1))
-
     out = gzip.compress(buf[start:end])
-
     queue.put((num, out))
 
 
