@@ -19,6 +19,8 @@ def test_multiprocessing_flow(buf = """I'm a random test",
         The weather is nice today,
         Random test string number nine,
         Last but not least, the final test string""".encode(), procs = 10):
+    
+    multiprocessing.set_start_method("spawn")
 
     queue = Queue()
 
@@ -84,7 +86,7 @@ if __name__ == "__main__":
         ).deploy(
             name="Multiprocessing Test Deployment",
             work_pool_name="k8s-minikube-test",
-            image="masonm2/temprepo:withcode03132025.3",
+            image="masonm2/temprepo:withcode04242025.1",
             build=False,
             push=False
         )
