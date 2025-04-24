@@ -1,52 +1,90 @@
 from prefect import flow, task
-from multiprocessing import Process
 from prefect.runner.storage import GitRepository
 
+import multiprocessing
 
-def print_func(continent='Asia'):
-    print('The name of continent is : ', continent)
+from multiprocessing import Queue
 
-@task(log_prints=True)
-def run_print_func():
-    print("This task is to print out given continents.")
-    names = ['America', 'Europe', 'Africa']
-    procs = []
-    proc = Process(target=print_func)  # instantiating without any argument
-    procs.append(proc)
-    proc.start()
-
-    # instantiating process with arguments
-    for name in names:
-        # print(name)
-        proc = Process(target=print_func, args=(name,))
-        procs.append(proc)
-        proc.start()
-    # complete the processes
-    for proc in procs:
-        proc.join()
-        proc.close()
+import gzip
 
  
+@flow
+def test_multiprocessing_flow(buf = """I'm a random test",
+        The quick brown fox jumps over the lazy dog,
+        Lorem ipsum dolor sit amet,
+        Python is awesome!,
+        Testing multiprocessing gzip compression,
+        Another random string for testing purposes,
+        Encoding and compressing this text,
+        The weather is nice today,
+        Random test string number nine,
+        Last but not least, the final test string""".encode(), procs = 10):
 
-@flow(name="test-multiprocessing")
-def test_multiprocessing_flow():
-    run_print_func()
-    print("Multiprocessing works!")
+    queue = Queue()
 
+    workers = []
+
+    print(f"Starting {procs} gzip jobs.")
+
+    for num in range(procs):
+
+        # worker = Process(target=gzip_worker, args=(buf, num, procs, queue))
+
+        ctx = multiprocessing.get_context("spawn")
+
+        worker = ctx.Process(target=gzip_worker, args=(buf, num, procs, queue))
+
+        worker.start()
+
+        workers.append(worker)
+
+    print("gzip jobs submitted. Collecting results.")
+
+    parts = []
+
+    for _ in workers:
+
+        parts.append(queue.get())
+
+    for worker in workers:
+
+        worker.join()
+
+        if worker.exitcode != 0:
+
+            raise RuntimeError(f'A worker returned {worker.exitcode} exit code')
+
+    parts.sort(key=lambda x: x[0])
+
+    print("Return zipped results as a list.")
+
+    return [part[1] for part in parts]
+
+   
+def gzip_worker(buf, num, procs, queue):
+
+    size = len(buf)
+
+    start = int(size / procs * num)
+
+    end = int(size / procs * (num + 1))
+
+    out = gzip.compress(buf[start:end])
+
+    queue.put((num, out))
 
 
 if __name__ == "__main__":
-    test_multiprocessing_flow()
-    # test_multiprocessing_flow.from_source(
-    #     source=GitRepository(
-    #         url="https://github.com/masonmenges/mm2-sanbox.git",
-    #         branch="main"
-    #         ),
-    #     entrypoint="flows/multiprocessing_test2.py:test_multiprocessing_flow"
-    #     ).deploy(
-    #         name="Multiprocessing Test Deployment",
-    #         work_pool_name="k8s-minikube-test",
-    #         image="masonm2/temprepo:withcode03132025.3",
-    #         build=False,
-    #         push=False
-    #     )
+    test_multiprocessing_flow.from_source(
+        source=GitRepository(
+            url="https://github.com/masonmenges/mm2-sanbox.git",
+            branch="main"
+            ),
+        entrypoint="flows/multiprocessing_test2.py:test_multiprocessing_flow"
+        ).deploy(
+            name="Multiprocessing Test Deployment",
+            work_pool_name="k8s-minikube-test",
+            image="masonm2/temprepo:withcode03132025.3",
+            build=False,
+            push=False
+        )
