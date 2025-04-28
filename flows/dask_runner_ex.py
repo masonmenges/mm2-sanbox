@@ -11,7 +11,7 @@ async def my_task(time_seconds: int):
 @flow(log_prints=True
      )
 async def my_flow():
-     ran_nums = [10, 11, 12, 13]
+     ran_nums = [30, 60, 90, 120]
      futures = []
 
      futures = my_task.map(ran_nums)
