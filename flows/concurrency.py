@@ -3,6 +3,7 @@ from prefect.concurrency.asyncio import concurrency
 from prefect.context import get_run_context
 import datetime
 import asyncio
+from prefect_aws.lambda_function import LambdaFunction
 import numpy as np
 
 @task
