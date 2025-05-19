@@ -44,5 +44,13 @@ if __name__ == "__main__":
         work_pool_name="k8s-minikube-test",
         image="masonm2/temprepo:nocode05192025.1",
         build=False,
-        push=False
+        push=False,
+        job_variables={
+            "command": "uv run prefect flow-run execute",
+            "env": [
+                {"name": "UV_CACHE_DIR", "value": "/tmp/uv-cache"},
+                {"name": "PREFECT_DEBUG_MODE", "value": "True"},
+                {"name": "PREFECT_HOME", "value": "/tmp/.prefect"},
+            ]
+        }
     )
