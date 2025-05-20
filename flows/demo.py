@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from prefect import flow, task, get_run_logger
 from prefect.runner.storage import GitRepository  
 from prefect.artifacts import create_link_artifact
-import asyncio, os
+import asyncio, os, pytz
 
 class SampleDropdownEnum(str, enum.Enum):
     positive="positvie"
@@ -13,19 +13,17 @@ class SampleDropdownEnum(str, enum.Enum):
 
 class SampleValues(BaseModel):
     field_1: List[str]
-    date: datetime.datetime
+    date: datetime.datetime = datetime.datetime.now().astimezone(pytz.timezone(("US/Denver")))
     dropdown: SampleDropdownEnum = SampleDropdownEnum.positive
 
 
 @flow(log_prints=True)
-async def demo_flow(date: str = "2025-05-15"):
+async def demo_flow(params: SampleValues = SampleValues(field_1=["testing"])
+):
     logger = get_run_logger()
-    logger.info(f"Configs date: {date}")
+    logger.info(f"Configs date: {params.date}")
     await create_link_artifact(link="notreal.notrel")
 
-
-open_api_schema = demo_flow.to_deployment(name="false")._parameter_openapi_schema.model_dump()
-print(open_api_schema)
 
 if __name__ == "__main__":
     demo_flow.from_source(
