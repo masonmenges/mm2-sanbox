@@ -13,7 +13,7 @@ class SampleDropdownEnum(str, enum.Enum):
 
 class SampleValues(BaseModel):
     field_1: List[str]
-    date: datetime.datetime = datetime.datetime.now().astimezone(pytz.timezone(("US/Denver")))
+    date: datetime.datetime = datetime.datetime.now().astimezone(pytz.timezone(("US/Mountain")))
     dropdown: SampleDropdownEnum = SampleDropdownEnum.positive
 
 
