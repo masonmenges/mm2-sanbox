@@ -17,16 +17,12 @@ def demo_windows_flow():
 
 if __name__ == "__main__":
     # state = asyncio.run(demo_flow())
-    # demo_flow.from_source(
-    #     source=GitRepository(
-    #         url="https://github.com/masonmenges/mm2-sanbox.git"
-    #         ),
-    #     entrypoint="flows/demo_windows.py:demo_flow",
-    # ).deploy(
-    #     name="local_windows_test",
-    #     work_pool_name="windows_local_pool",
-    #     job_variables={
-    #         "pip_packages": ["pandas", "sqlalchemy", "prefect-snowflake", "prefect-slack"]
-    #     }
-    # )
-    demo_windows_flow()
+    demo_windows_flow.from_source(
+        source=GitRepository(
+            url="https://github.com/masonmenges/mm2-sanbox.git"
+            ),
+        entrypoint="flows/demo_windows.py:demo_windows_flow",
+    ).deploy(
+        name="testing_git_windows",
+        work_pool_name="windows_local_pool"
+    )
