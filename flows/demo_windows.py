@@ -1,4 +1,4 @@
-import datetime, pytz
+import datetime, pytz, random
 
 from prefect import flow, get_run_logger
 from prefect.runner.storage import GitRepository
@@ -11,8 +11,14 @@ def demo_windows_flow():
 
     time = datetime.datetime.now().astimezone(pytz.timezone(("US/Mountain")))
 
+    r = random.randint(1,100)
+
+
+
     with open("C:\\Users\\track\\Desktop\\testdoc.txt", "a") as f:
         f.write(f"Ran at {time}\n")
+        if r >75:
+            raise Exception("I FAILED YOU WINDOWS")
 
 
 if __name__ == "__main__":
