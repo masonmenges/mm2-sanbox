@@ -12,7 +12,7 @@ def demo_windows_flow():
     time = datetime.datetime.now().astimezone(pytz.timezone(("US/Mountain")))
 
     with open("C:\\Users\\track\\Desktop\\testdoc.txt", "a") as f:
-        f.write(f"Ran at {time}")
+        f.write(f"Ran at {time}\n")
 
 
 if __name__ == "__main__":
