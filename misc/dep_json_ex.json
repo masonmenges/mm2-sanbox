@@ -1,0 +1,64 @@
+{
+    "id": "80360e41-7178-4ebc-ab6f-ec063b691e79",
+    "created": "2024-03-07T18:54:43.572288Z",
+    "updated": "2024-04-02T15:10:01.243315Z",
+    "name": "ecs-demo-test",
+    "version": "f21ddf5aa3034f674c04bb50b2763112",
+    "description": null,
+    "flow_id": "5eb033eb-c231-42f0-8200-5b0d90fdd281",
+    "concurrency_limit": null,
+    "global_concurrency_limit": null,
+    "concurrency_options": null,
+    "paused": false,
+    "schedules": [],
+    "job_variables": {
+        "image": "masonm2/temprepo:demo_flow"
+    },
+    "parameters": {
+        "date": "2024-04-30T00:00:00-06:00"
+    },
+    "pull_steps": [
+        {
+            "prefect.deployments.steps.git_clone": {
+                "branch": null,
+                "repository": "https://github.com/masonmenges/mm2-sanbox.git"
+            }
+        }
+    ],
+    "tags": [],
+    "work_queue_name": "default",
+    "last_polled": "2024-12-03T01:33:02.921223Z",
+    "parameter_openapi_schema": {
+        "type": "object",
+        "title": "Parameters",
+        "required": [
+            "date"
+        ],
+        "properties": {
+            "date": {
+                "type": "string",
+                "title": "date",
+                "format": "date-time",
+                "position": 0
+            }
+        }
+    },
+    "path": null,
+    "entrypoint": "flows/demo.py:demo_flow",
+    "storage_document_id": null,
+    "infrastructure_document_id": null,
+    "created_by": {
+        "id": "<USERID>",
+        "type": "USER",
+        "display_value": "<userhandle>"
+    },
+    "updated_by": {
+        "id": "<USERID>",
+        "type": "USER",
+        "display_value": "<userhandle>"
+    },
+    "work_queue_id": null,
+    "enforce_parameter_schema": false,
+    "work_pool_name": "k8s-minikube-test",
+    "status": "NOT_READY"
+}

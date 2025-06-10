@@ -21,26 +21,15 @@ pull:
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
-- name: K8s-demo-secret
+- name: manual_env_yaml
   version: null
   tags: []
   description: null
   schedule: {}
   flow_name: null
-  entrypoint: flows/demo.py:demo_flow
+  entrypoint: flows/env_vars.py:env_vars_flow
   parameters: {}
   work_pool:
-    name: k8s-minikube-test
+    name: local-cloud-test
     work_queue_name: null
-    job_variables:
-      image: masonm2/temprepo:hello_flow
-      env: 
-        - {
-            "name": "PREFECT_NEW_SECRET",
-            "valueFrom": {
-                "secretKeyRef": {
-                    "name": "my-secret",
-                    "key": "my-secret-key"
-                }
-            }
-        }
+    job_variables: {"env": {"yaml_env_var_1": "yaml_value_1", "yaml_env_var_2": "yaml_value_2"}}

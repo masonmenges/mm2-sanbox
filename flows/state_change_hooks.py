@@ -3,7 +3,7 @@ from prefect.settings import (
     PREFECT_API_KEY,
     PREFECT_API_URL,
 )
-from prefect.client.schemas.objects import Flow, FlowRun, State
+from prefect.client.schemas.objects import Flow, FlowRun, State, TaskRun
 from prefect.states import Cancelling
 import time
 
@@ -26,12 +26,17 @@ def create_client(
     return httpx.Client(**httpx_settings) 
 
 
+def cancel_dbt_job(flow: Flow, flow_run: FlowRun, state: State):
+    pass
+
 def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
 
     client = create_client(
         api_key=PREFECT_API_KEY.value(),
         base_url=PREFECT_API_URL.value()
     )
+
+    flow_run
 
     if flow_run.deployment_id:
         filters = {
@@ -118,3 +123,9 @@ def cancel_if_already_running(flow: Flow, flow_run: FlowRun, state: State):
 #     State: {state.name}
 #     State_message: {state.message}""")
 #     assert response["ok"]
+
+
+def task_params_on_failure(flow: Flow, task_run: TaskRun, state: State):
+    inputs = task_run.task_inputs
+    print(inputs)
+    pass

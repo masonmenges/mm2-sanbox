@@ -12,3 +12,5 @@ worker:
       value: ignore
     - name: PREFECT_LOGGING_LEVEL
       value: DEBUG
+    - name: PREFECT_EXPERIMENTS_WORKER_LOGGING_TO_API_ENABLED
+      value: "True"
