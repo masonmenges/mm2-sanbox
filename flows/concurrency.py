@@ -28,8 +28,8 @@ async def group_a_task(n: int, run_name: str):
 
 @task
 async def group_b_task(n: int, run_name: str):
-    # logger = get_run_logger()
-    # logger.info(f"sleep for {n}..")
+    logger = get_run_logger()
+    logger.info(f"sleep for {n}..")
     count = 0
     a = 0
     b = 1
@@ -57,11 +57,15 @@ async def concurrent_flow(tasks):
 
 
 
-@flow(name="Concurrency_Test_flow_2")
-async def con_flow(max_n: int = 10):
+@flow(name="Concurrency_Test_flow_2", retries=4)
+async def con_flow(max_n: int = 10, failure: bool = False):
     tasks_groups = np.array_split(range(max_n), 2)
     subflows = [concurrent_flow(tasks) for tasks in tasks_groups]
     test = await asyncio.gather(*subflows, return_exceptions=True)
+
+    if failure:
+        raise Exception("Test failure")
+
 
 
 
