@@ -26,15 +26,16 @@ async def demo_flow(params: SampleValues = SampleValues(field_1=["testing"])
 
 
 if __name__ == "__main__":
-    demo_flow.from_source(
-        source=GitRepository(
-            url="https://github.com/masonmenges/mm2-sanbox.git",
-            commit_sha=os.getenv("GITHUB_SHA")
-            ),
-        entrypoint="flows/demo.py:demo_flow"
-        ).deploy(
-            name="param-testing",
-            work_pool_name="local-worker-test"
-        )
-    open_api_schema = demo_flow.to_deployment(name="false")._parameter_openapi_schema.model_dump()
-    print(open_api_schema)
+    # demo_flow.from_source(
+    #     source=GitRepository(
+    #         url="https://github.com/masonmenges/mm2-sanbox.git",
+    #         commit_sha=os.getenv("GITHUB_SHA")
+    #         ),
+    #     entrypoint="flows/demo.py:demo_flow"
+    #     ).deploy(
+    #         name="param-testing",
+    #         work_pool_name="local-worker-test"
+    #     )
+    # open_api_schema = demo_flow.to_deployment(name="false")._parameter_openapi_schema.model_dump()
+    # print(open_api_schema)
+    asyncio.run(demo_flow())
