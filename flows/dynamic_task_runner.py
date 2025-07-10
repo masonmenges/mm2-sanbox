@@ -10,10 +10,10 @@ from prefect import context
 def some_task():
     pass
 
-@flow(task_runner= DaskTaskRunner(cluster_kwargs={"n_workers": int(os.environ["num_workers"])}))
-def dynaimc_task_runner_flow():
+@flow(task_runner= DaskTaskRunner(cluster_kwargs={"n_workers": int(os.environ.get("num_workers", "Not Set"))}))
+def dynamic_task_runner_flow():
 
     some_task.submit().wait()
 
 if __name__ == "__main__":
-    dynaimc_task_runner_flow()
+    dynamic_task_runner_flow()
