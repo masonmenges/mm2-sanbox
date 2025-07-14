@@ -41,10 +41,7 @@ def f(csv_file_name, duck_db):
     cmd = f"sling run --src-stream 'file://{csv_file_name}' --src-options 'format: csv' --tgt-conn {duck_db} --tgt-object 'test' --mode full-refresh"
 
     shell_run_command.with_options(timeout_seconds=600).submit(
-        command=cmd,
-        env={
-
-        }
+        command=cmd
     ).wait()
 
     # print("!!!!!!!!!!TESTING!!!!!!!!")
