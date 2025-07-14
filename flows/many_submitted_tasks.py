@@ -1,11 +1,12 @@
 from prefect import flow, task
+from prefect_shell import shell_run_command
 
 
 @task
 def f(x):
-    if x%2 > 1:
-        raise
-
+    shell_run_command.submit(
+        command="sling run -r misc/sling_test.yaml"
+    )
 
 @flow
 def test_flow():
