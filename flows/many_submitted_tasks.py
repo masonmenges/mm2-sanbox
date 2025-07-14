@@ -6,7 +6,7 @@ from prefect_shell import shell_run_command
 def f(x):
     shell_run_command.submit(
         command="sling run -r misc/sling_test.yaml"
-    )
+    ).wait()
 
 @flow
 def test_flow():
