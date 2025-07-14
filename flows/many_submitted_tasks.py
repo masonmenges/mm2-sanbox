@@ -54,7 +54,7 @@ def f(csv_file_name, duck_db):
 @flow
 def test_flow():
     futures = []
-    for i in range(0, 20):
+    for i in range(0, 10):
         f_name = gen_csv.submit(i)
         db_name = create_duckdb.submit(i)
         futures.append(f.submit(f_name, db_name))
