@@ -4,10 +4,14 @@
 
 # Generic metadata about this project
 name: mm2-sanbox
-prefect-version: 2.14.20
+prefect-version: 3.2.7
 
 # build section allows you to manage and build docker images
-build: null
+build:
+- prefect.deployments.steps.run_shell_script:
+    id: get-commit-hash
+    script: git rev-parse --short HEAD
+    stream_output: false
 
 # push section allows you to manage if and how this project is uploaded to remote locations
 push: null
@@ -17,19 +21,154 @@ pull:
 - prefect.deployments.steps.git_clone:
     repository: https://github.com/masonmenges/mm2-sanbox.git
     branch: main
-    access_token: null
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
-- name: manual_env_yaml
+- name: dask_test_yaml
+  version: "{{ get-commit-hash.stdout }}"
+  tags: []
+  description: null
+  schedule: {}
+  flow_name: null
+  entrypoint: flows/dask_runner_ex.py:my_flow
+  parameters: {}
+  concurrency_limit:
+    limit: 1
+    collision_strategy: CANCEL_NEW
+  work_pool:
+    name: local-worker-test
+    work_queue_name: null
+    job_variables: 
+      env: 
+        PREFECT_LOGGING_EXTRA_LOGGERS: dask,scipy
+        yaml_env_var_2: yaml_value_2
+  triggers:
+    - type: event
+      name: testing_trigger_name
+      description: "some description"
+      enabled: true
+      match:
+        prefect.resource.id: prefect.flow_run.*
+      expect:
+        - prefect.flow_run.Completed
+- name: dask_test_yaml_2_ecs
   version: null
   tags: []
   description: null
   schedule: {}
   flow_name: null
-  entrypoint: flows/env_vars.py:env_vars_flow
+  entrypoint: flows/dask_runner_ex.py:my_flow
   parameters: {}
+  build: null
+  push: null
   work_pool:
-    name: local-cloud-test
+    name: ecs-test-pool
     work_queue_name: null
-    job_variables: {"env": {"yaml_env_var_1": "yaml_value_1", "yaml_env_var_2": "yaml_value_2"}}
+    job_variables: {
+      "env": {"yaml_env_var_1": "yaml_value_1", "yaml_env_var_2": "yaml_value_2"},
+      "task_definition_arn": "arn:aws:ecs:us-east-2:455346737763:task-definition/prefect_mm2_flows:3"
+      }
+- name: schedule_param_tests4
+  version: null
+  tags: []
+  description: null
+  schedules:
+    - cron: "0 0 15 * *"
+      slug: "schedule_date1"
+      parameters:
+        date: "03/09/2025"
+    - cron: "0 8 * * *"
+      slug: "schedule_date2"
+      parameters: {
+        date: "03/10/2025"
+      }
+  flow_name: null
+  entrypoint: flows/demo.py:demo_flow
+  parameters: {
+    "date": "03/07/2025"
+  }
+  work_pool:
+    name: k8s-minikube-test
+    work_queue_name: null
+    job_variables:
+      image: masonm2/temprepo:withcode03132025.2
+- name: "Schedule_params_test"
+  version: TEST
+  tags: {}
+  description: null
+  entrypoint: flows/demo.py:demo_flow
+  parameters: 
+    config: {"name": "tradeweb"}
+  schedules:
+    - cron: "0/5 0 * * *"
+      timezone: "America/New_York"
+      active: true
+      slug: param_testing
+      parameters:
+        date: "03/14/2025"
+        configs: {"name": "prefect2"}
+  work_pool:
+    name: k8s-minikube-test
+    work_queue_name: null
+    job_variables:
+      image: masonm2/temprepo:withcode03132025.2
+- name: "custom_loggers_test_dep_new"
+  version: TEST
+  tags: {}
+  description: null
+  entrypoint: flows/logger_custom_flow.py:logging_test_flow
+  parameters: {}
+  schedules: []
+  work_pool:
+    name: k8s-minikube-test
+    work_queue_name: null
+    job_variables:
+      image: masonm2/temprepo:nocode07142025.1
+      env: 
+        PREFECT_LOGGING_EXTRA_LOGGERS: foo
+- name: Concurrent_fibonacci
+  version: "{{ get-commit-hash.stdout }}"
+  tags:
+    - dev
+    - demo
+  description: null
+  schedule: {}
+  flow_name: null
+  entrypoint: flows/concurrency.py:con_flow
+  enforce_parameter_schema: false
+  concurrency_limit:
+    limit: 2
+    collision_strategy: CANCEL_NEW
+  work_pool:
+    name: k8s-minikube-test
+    work_queue_name: null
+    job_variables:
+      image: masonm2/temprepo:testingdeps
+- name: Concurrent_tasks_submtted
+  version: "{{ get-commit-hash.stdout }}"
+  tags:
+    - dev
+    - demo
+  description: null
+  schedule: {}
+  flow_name: null
+  entrypoint: flows/many_submitted_tasks.py:test_flow
+  enforce_parameter_schema: false
+  work_pool:
+    name: k8s-minikube-test
+    job_variables:
+      image: masonm2/temprepo:testingdeps
+- name: dynamic_task_runner_test
+  version: "{{ get-commit-hash.stdout }}"
+  tags:
+    - dev
+    - demo
+  description: null
+  schedule: {}
+  flow_name: null
+  entrypoint: flows/dynamic_task_runner.py:dynamic_task_runner_flow
+  enforce_parameter_schema: false
+  work_pool:
+    name: k8s-minikube-test
+    job_variables:
+      image: masonm2/temprepo:testingdeps
