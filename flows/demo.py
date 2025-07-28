@@ -4,9 +4,12 @@ from pydantic import BaseModel
 from prefect import flow, task, get_run_logger
 from prefect.runner.storage import GitRepository  
 from prefect.artifacts import create_link_artifact
+from prefect.runtime.flow_run import get_job_variables
 import asyncio, os, pytz
 
 from prefect.task_runners import ThreadPoolTaskRunner
+
+test = get_job_variables()
 
 class SampleDropdownEnum(str, enum.Enum):
     positive="positvie"
@@ -25,11 +28,10 @@ def some_task():
 
 
 
-@flow(flow_run_name="Custom_flow_run_name")
-def demo_flow(params: SampleValues = SampleValues(field_1=["testing"])
-):
+@flow(flow_run_name=test["Name"])
+def demo_flow(date: str = None):
     logger = get_run_logger()
-    logger.info(f"Configs date: {params.date}")
+    logger.info(f"Configs date: {date}")
     
 
     some_task()
@@ -38,7 +40,7 @@ def demo_flow(params: SampleValues = SampleValues(field_1=["testing"])
 if __name__ == "__main__":
     demo_flow.from_source(
         source=GitRepository(
-            url="https://github.com/masonmenges/mm2-sanbox.git",
+            url=os.getenv("GITREPO"),
             commit_sha=os.getenv("GITHUB_SHA")
             ),
         entrypoint="flows/demo.py:demo_flow"
