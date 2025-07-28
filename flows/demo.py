@@ -4,8 +4,9 @@ from pydantic import BaseModel
 from prefect import flow, task, get_run_logger
 from prefect.runner.storage import GitRepository  
 from prefect.artifacts import create_link_artifact
-from prefect.runtime.flow_run import get_job_variables
 import asyncio, os, pytz
+
+from prefect.runtime.flow_run import get_job_variables
 
 from prefect.task_runners import ThreadPoolTaskRunner
 
@@ -40,7 +41,7 @@ def demo_flow(date: str = None):
 if __name__ == "__main__":
     demo_flow.from_source(
         source=GitRepository(
-            url=os.getenv("GITREPO"),
+            url="https://github.com/masonmenges/mm2-sanbox.git",
             commit_sha=os.getenv("GITHUB_SHA")
             ),
         entrypoint="flows/demo.py:demo_flow"
