@@ -10,7 +10,6 @@ from prefect.runtime.flow_run import get_job_variables
 
 from prefect.task_runners import ThreadPoolTaskRunner
 
-test = get_job_variables()
 
 class SampleDropdownEnum(str, enum.Enum):
     positive="positvie"
@@ -29,7 +28,7 @@ def some_task():
 
 
 
-@flow(flow_run_name=test["Name"])
+@flow(flow_run_name="custom-name-test")
 def demo_flow(date: str = None):
     logger = get_run_logger()
     logger.info(f"Configs date: {date}")
