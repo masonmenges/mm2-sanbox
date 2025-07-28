@@ -6,6 +6,8 @@ from prefect.runner.storage import GitRepository
 from prefect.artifacts import create_link_artifact
 import asyncio, os, pytz
 
+from prefect.task_runners import ThreadPoolTaskRunner
+
 class SampleDropdownEnum(str, enum.Enum):
     positive="positvie"
     negatvie="negative"
@@ -17,25 +19,36 @@ class SampleValues(BaseModel):
     dropdown: SampleDropdownEnum = SampleDropdownEnum.positive
 
 
-@flow(log_prints=True)
-async def demo_flow(params: SampleValues = SampleValues(field_1=["testing"])
+@task()
+def some_task():
+    pass
+
+
+
+@flow(flow_run_name="Custom_flow_run_name")
+def demo_flow(params: SampleValues = SampleValues(field_1=["testing"])
 ):
     logger = get_run_logger()
     logger.info(f"Configs date: {params.date}")
-    await create_link_artifact(link="notreal.notrel")
+    
+
+    some_task()
 
 
 if __name__ == "__main__":
-    # demo_flow.from_source(
-    #     source=GitRepository(
-    #         url="https://github.com/masonmenges/mm2-sanbox.git",
-    #         commit_sha=os.getenv("GITHUB_SHA")
-    #         ),
-    #     entrypoint="flows/demo.py:demo_flow"
-    #     ).deploy(
-    #         name="param-testing",
-    #         work_pool_name="local-worker-test"
-    #     )
+    demo_flow.from_source(
+        source=GitRepository(
+            url="https://github.com/masonmenges/mm2-sanbox.git",
+            commit_sha=os.getenv("GITHUB_SHA")
+            ),
+        entrypoint="flows/demo.py:demo_flow"
+        ).deploy(
+            name="custom-name-testing",
+            work_pool_name="k8s-minikube-test",
+            job_variables={
+                "name": "custom-job-name"
+            }
+        )
     # open_api_schema = demo_flow.to_deployment(name="false")._parameter_openapi_schema.model_dump()
     # print(open_api_schema)
-    asyncio.run(demo_flow())
+    # asyncio.run(demo_flow())
