@@ -1,8 +1,10 @@
-import asyncio
+import asyncio, os
 
 from random import random, uniform
 from prefect import flow, task, get_run_logger
 from prefect.futures import wait
+
+from prefect.runner.storage import GitRepository
 
 
 @task
@@ -52,4 +54,13 @@ async def sf_loader():
         raise
 
 if __name__ == "__main__":
-    sf_loader.serve()
+    sf_loader.from_source(
+        source=GitRepository(
+            url="https://github.com/masonmenges/mm2-sanbox.git",
+            commit_sha=os.getenv("GITHUB_SHA")
+            ),
+        entrypoint="flows/long_running_test.py:sf_loader"
+        ).deploy(
+            name="long-running-testing",
+            work_pool_name="demo_eks"
+        )
