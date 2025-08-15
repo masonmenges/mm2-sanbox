@@ -27,7 +27,7 @@ def some_task():
     pass
 
 @flow()
-def demo_flow(configs: SampleValues):
+def demo_flow(configs: SampleValues = SampleValues(field_1=["a", "b", "c"])):
     logger = get_run_logger()
     logger.info(f"Configs date: {configs.date}")
     
