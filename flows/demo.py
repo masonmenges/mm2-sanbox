@@ -19,7 +19,7 @@ class SampleDropdownEnum(str, enum.Enum):
 
 class SampleValues(BaseModel):
     # field_1: List[str]
-    date: datetime.datetime = Field(title="Date", default_factory = lambda: datetime.datetime = datetime.datetime.today().astimezone(pytz.timezone(("US/Mountain"))))
+    date: datetime.datetime = Field(title="Date", default_factory = lambda: datetime.datetime.today().astimezone(pytz.timezone(("US/Mountain"))))
     dropdown: SampleDropdownEnum = SampleDropdownEnum.positive
 
 
