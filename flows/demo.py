@@ -1,6 +1,6 @@
 import datetime, enum
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from prefect import flow, task, get_run_logger
 from prefect.runner.storage import GitRepository  
 from prefect.artifacts import create_link_artifact
@@ -11,6 +11,7 @@ from prefect.runtime.flow_run import get_job_variables
 from prefect.task_runners import ThreadPoolTaskRunner
 
 
+
 class SampleDropdownEnum(str, enum.Enum):
     positive="positvie"
     negatvie="negative"
@@ -18,7 +19,7 @@ class SampleDropdownEnum(str, enum.Enum):
 
 class SampleValues(BaseModel):
     # field_1: List[str]
-    date: datetime.datetime = datetime.datetime.today().astimezone(pytz.timezone(("US/Mountain")))
+    date: datetime.datetime = Field(title="Date", default_factory = lambda: datetime.datetime = datetime.datetime.today().astimezone(pytz.timezone(("US/Mountain"))))
     dropdown: SampleDropdownEnum = SampleDropdownEnum.positive
 
 
