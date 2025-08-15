@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from prefect import flow, task, get_run_logger
 from prefect.runner.storage import GitRepository  
 from prefect.artifacts import create_link_artifact
-import asyncio, os, pytz
+import asyncio, os, pytz, datetime
 
 from prefect.runtime.flow_run import get_job_variables
 
@@ -28,8 +28,8 @@ def some_task():
 
 
 
-@flow(flow_run_name="custom-name-test")
-def demo_flow(date: str = None):
+@flow()
+def demo_flow(date: datetime.datetime = datetime.datetime.today().astimezone(pytz.timezone(("US/Mountain")))):
     logger = get_run_logger()
     logger.info(f"Configs date: {date}")
     
@@ -45,11 +45,8 @@ if __name__ == "__main__":
             ),
         entrypoint="flows/demo.py:demo_flow"
         ).deploy(
-            name="custom-name-testing",
-            work_pool_name="k8s-minikube-test",
-            job_variables={
-                "name": "custom-job-name"
-            }
+            name="dynamic-parameter-test",
+            work_pool_name="k8s-minikube-test"
         )
     # open_api_schema = demo_flow.to_deployment(name="false")._parameter_openapi_schema.model_dump()
     # print(open_api_schema)
