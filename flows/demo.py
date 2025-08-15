@@ -17,7 +17,7 @@ class SampleDropdownEnum(str, enum.Enum):
 
 
 class SampleValues(BaseModel):
-    field_1: List[str]
+    # field_1: List[str]
     date: datetime.datetime = datetime.datetime.today().astimezone(pytz.timezone(("US/Mountain")))
     dropdown: SampleDropdownEnum = SampleDropdownEnum.positive
 
@@ -27,7 +27,7 @@ def some_task():
     pass
 
 @flow()
-def demo_flow(configs: SampleValues = SampleValues(field_1=["a", "b", "c"])):
+def demo_flow(configs: SampleValues = SampleValues()):
     logger = get_run_logger()
     logger.info(f"Configs date: {configs.date}")
     
@@ -43,7 +43,10 @@ if __name__ == "__main__":
         entrypoint="flows/demo.py:demo_flow"
         ).deploy(
             name="dynamic-parameter-test",
-            work_pool_name="demo_eks"
+            work_pool_name="demo_eks",
+            parameters={
+                "configs": {}
+            }
         )
     # open_api_schema = demo_flow.to_deployment(name="false")._parameter_openapi_schema.model_dump()
     # print(open_api_schema)
