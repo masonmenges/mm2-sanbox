@@ -15,12 +15,10 @@ class SampleDropdownEnum(enum.StrEnum):
     positive="positvie"
     negatvie="negative"
 
-print(list(SampleDropdownEnum))
-
 
 class SampleValues(BaseModel):
     date: datetime.datetime = Field(title="Date", default_factory = lambda: datetime.datetime.today().astimezone(pytz.timezone(("US/Mountain"))))
-    dropdown: List[AssetsToActOnEnum |SampleDropdownEnum] = list(SampleDropdownEnum)
+    dropdown: list[AssetsToActOnEnum |SampleDropdownEnum]
 
 
 @task()
