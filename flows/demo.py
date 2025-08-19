@@ -1,4 +1,4 @@
-import datetime, enum
+import datetime, enum, time
 from typing import List
 from pydantic import BaseModel, Field
 from prefect import flow, task, get_run_logger
@@ -6,7 +6,6 @@ from prefect.context import get_run_context
 from prefect.runner.storage import GitRepository  
 import os, pytz, datetime
 
-from datetime import time
 
 class AssetsToActOnEnum(enum.StrEnum):
     ThingOne = 'thing_one'
