@@ -18,7 +18,7 @@ class SampleDropdownEnum(enum.StrEnum):
 
 class SampleValues(BaseModel):
     date: datetime.datetime = Field(title="Date", default_factory = lambda: datetime.datetime.today().astimezone(pytz.timezone(("US/Mountain"))))
-    dropdown: list[AssetsToActOnEnum |SampleDropdownEnum]
+    dropdown: list[AssetsToActOnEnum |SampleDropdownEnum] = list(AssetsToActOnEnum)
 
 
 @task()
@@ -26,7 +26,7 @@ def some_task():
     pass
 
 @flow()
-def demo_flow(configs: SampleValues):
+def demo_flow(configs: SampleValues = SampleValues()):
 
     logger = get_run_logger()
     logger.info(f"Configs date: {configs.date}")
