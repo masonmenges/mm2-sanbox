@@ -3,24 +3,24 @@ from typing import List
 from pydantic import BaseModel, Field
 from prefect import flow, task, get_run_logger
 from prefect.runner.storage import GitRepository  
-from prefect.artifacts import create_link_artifact
-import asyncio, os, pytz, datetime
-
-from prefect.runtime.flow_run import get_job_variables
-
-from prefect.task_runners import ThreadPoolTaskRunner
+import os, pytz, datetime
 
 
+class AssetsToActOnEnum(enum.StrEnum):
+    ThingOne = 'thing_one'
+    ThingTwo = 'MyGreatThingy'
+    ThingThree = 'AlsoACoolThing'
 
-class SampleDropdownEnum(str, enum.Enum):
+class SampleDropdownEnum(enum.StrEnum):
     positive="positvie"
     negatvie="negative"
 
+print(list(SampleDropdownEnum))
+
 
 class SampleValues(BaseModel):
-    # field_1: List[str]
     date: datetime.datetime = Field(title="Date", default_factory = lambda: datetime.datetime.today().astimezone(pytz.timezone(("US/Mountain"))))
-    dropdown: SampleDropdownEnum = SampleDropdownEnum.positive
+    dropdown: List[AssetsToActOnEnum |SampleDropdownEnum] = list(SampleDropdownEnum)
 
 
 @task()
@@ -28,7 +28,8 @@ def some_task():
     pass
 
 @flow()
-def demo_flow(configs: SampleValues = SampleValues()):
+def demo_flow(configs: SampleValues):
+
     logger = get_run_logger()
     logger.info(f"Configs date: {configs.date}")
     
@@ -44,10 +45,7 @@ if __name__ == "__main__":
         entrypoint="flows/demo.py:demo_flow"
         ).deploy(
             name="dynamic-parameter-test",
-            work_pool_name="demo_eks",
-            parameters={
-                "configs": {}
-            }
+            work_pool_name="demo_eks"
         )
     # open_api_schema = demo_flow.to_deployment(name="false")._parameter_openapi_schema.model_dump()
     # print(open_api_schema)
