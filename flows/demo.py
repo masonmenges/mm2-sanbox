@@ -2,9 +2,11 @@ import datetime, enum
 from typing import List
 from pydantic import BaseModel, Field
 from prefect import flow, task, get_run_logger
+from prefect.context import get_run_context
 from prefect.runner.storage import GitRepository  
 import os, pytz, datetime
 
+from datetime import time
 
 class AssetsToActOnEnum(enum.StrEnum):
     ThingOne = 'thing_one'
@@ -21,9 +23,13 @@ class SampleValues(BaseModel):
     dropdown: list[AssetsToActOnEnum |SampleDropdownEnum] = list(AssetsToActOnEnum)
 
 
-@task()
+@task(retries=2)
 def some_task():
-    pass
+    time.sleep(2)
+    context = get_run_context()
+    if context.task_run.run_count > 1:
+        return "success"
+    raise ValueError("I'm a Failure")
 
 @flow()
 def demo_flow(configs: SampleValues = SampleValues()):
