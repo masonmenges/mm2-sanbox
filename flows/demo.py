@@ -23,10 +23,11 @@ class SampleValues(BaseModel):
     dropdown: list[AssetsToActOnEnum |SampleDropdownEnum] = list(AssetsToActOnEnum)
 
 
-@task(retries=2)
+@task(retries=2, log_prints=True)
 def some_task():
     time.sleep(2)
     context = get_run_context()
+    print(context.task_run.run_count)
     if context.task_run.run_count > 1:
         return "success"
     raise ValueError("I'm a Failure")
