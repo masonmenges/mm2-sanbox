@@ -1,3 +1,3 @@
 #!/bin/bash
 # A sample Bash script, by Ryan
-echo Hello World!
+export TEST_ENV_VAR=1
