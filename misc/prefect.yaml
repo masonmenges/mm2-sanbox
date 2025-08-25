@@ -21,6 +21,14 @@ pull:
 - prefect.deployments.steps.git_clone:
     repository: https://github.com/masonmenges/mm2-sanbox.git
     branch: main
+- prefect.deployments.steps.run_shell_script:
+    id: test
+    script: ls
+    stream_output: True
+- prefect.deployments.steps.run_shell_script:
+    id: test
+    script: random_test.sh
+    stream_output: True
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
@@ -143,7 +151,7 @@ deployments:
     name: k8s-minikube-test
     work_queue_name: null
     job_variables:
-      image: masonm2/temprepo:testingdeps
+      image: masonm2/temprepo:nocode07142025.1
 - name: Concurrent_tasks_submtted
   version: "{{ get-commit-hash.stdout }}"
   tags:
@@ -155,9 +163,9 @@ deployments:
   entrypoint: flows/many_submitted_tasks.py:test_flow
   enforce_parameter_schema: false
   work_pool:
-    name: k8s-minikube-test
+    name: ecs-test-pool
     job_variables:
-      image: masonm2/temprepo:testingdeps
+      task_definition_arn: arn:aws:ecs:us-east-2:455346737763:task-definition/prefect_mm2_flows:9
 - name: dynamic_task_runner_test
   version: "{{ get-commit-hash.stdout }}"
   tags:
