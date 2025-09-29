@@ -1,6 +1,5 @@
 import asyncio, os
 
-from random import random, uniform
 from prefect import flow, task, get_run_logger
 from prefect.futures import wait
 
@@ -8,11 +7,9 @@ from prefect.runner.storage import GitRepository
 
 
 @task
-async def run_loader(config):
+async def long_running_task():
     logger = get_run_logger()
     try:
-        # start = 0
-        n = 1
         while True:
             await asyncio.sleep(5)
 
@@ -26,15 +23,13 @@ async def run_loader(config):
 
 
 @flow(log_prints=True)
-async def sf_loader():
+async def long_running_flow():
     logger = get_run_logger()
-    # configs = [load_yaml_config("src/configs.yaml", env=ENV)]
     tasks = []
     results = []
 
-    for cfg in range(0, 10):
-        # get_all_secrets(cfg['sec_cfgs']['secrets'])
-        task = run_loader.submit(cfg)
+    for _ in range(0, 10):
+        task = long_running_task.submit()
         tasks.append(task)
     logger.info(f"All tasks submitted!")
 
@@ -54,13 +49,18 @@ async def sf_loader():
         raise
 
 if __name__ == "__main__":
-    sf_loader.from_source(
+    long_running_flow.from_source(
         source=GitRepository(
             url="https://github.com/masonmenges/mm2-sanbox.git",
             commit_sha=os.getenv("GITHUB_SHA")
             ),
-        entrypoint="flows/long_running_test.py:sf_loader"
+        entrypoint="flows/long_running_test.py:long_running_flow"
         ).deploy(
             name="long-running-testing",
-            work_pool_name="demo_eks"
+            work_pool_name="demo_eks",
+            image="455346737763.dkr.ecr.us-east-2.amazonaws.com/mm2/flowsa:lowerwebsocketsversion",
+            build=False,
+            push=False
         )
+    
+
