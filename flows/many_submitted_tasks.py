@@ -44,7 +44,7 @@ def f(csv_file_name, duck_db):
         command=cmd
     ).wait()
 
-@flow
+@flow(name="ECS_flows")
 def test_flow():
     futures = []
     for i in range(0, 10):
