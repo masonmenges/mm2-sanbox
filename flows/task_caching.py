@@ -24,14 +24,14 @@ def some_compute_task(a_number: int):
     logger = get_run_logger()
 
     logger.info(f"Computing {a_number} + 1")
-    time.sleep(1800)
+    time.sleep(300)
     return a_number + 1
 
 @task(cache_policy=cache_config, refresh_cache=refresh_cache)
 def sub_flow(a_number: int):
     some_compute_task(a_number)
 
-@flow(persist_result=True)
+@flow(persist_result=True, result_storage=s3_bucket)
 def main_flow(a_number: int = 1):
     sub_flow(a_number)
 
@@ -45,5 +45,7 @@ if __name__ == "__main__":
     ).deploy(
         name="task_caching_ex",
         work_pool_name="k8s-minikube-test",
-        image="masonm2/temprepo:demo_3"
+        image="masonm2/temprepo:demo_01272026.2",
+        build=False,
+        push=False
     )
