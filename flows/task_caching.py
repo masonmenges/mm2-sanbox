@@ -12,14 +12,14 @@ from prefect.cache_policies import DEFAULT, NONE, INPUTS
 
 s3_bucket = S3Bucket.load("mm2-prefect-s3", _sync=True)
 s3_bucket.bucket_folder = "cache_key"
-cache_config = INPUTS.configure(
-    key_storage=s3_bucket,
-)
+# cache_config = INPUTS.configure(
+#     key_storage=s3_bucket,
+# )
 
 refresh_cache = os.getenv("REFRESH_CACHE", "False")
 
 
-@task(cache_policy=cache_config, refresh_cache=refresh_cache)
+@task(cache_policy=INPUTS, refresh_cache=refresh_cache)
 def some_compute_task(a_number: int):
     logger = get_run_logger()
 
@@ -27,7 +27,7 @@ def some_compute_task(a_number: int):
     time.sleep(300)
     return a_number + 1
 
-@task(cache_policy=cache_config, refresh_cache=refresh_cache)
+@task(cache_policy=INPUTS, refresh_cache=refresh_cache)
 def sub_flow(a_number: int):
     some_compute_task(a_number)
 
