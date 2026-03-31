@@ -1,0 +1,29 @@
+# Prefect Worker — Helm values template
+#
+# To deploy:
+#   1. Copy this file to helm/values.local.yaml (gitignored)
+#   2. Replace all <PLACEHOLDER> values with your actual values from .env.example
+#   3. helm install prefect-worker prefect/prefect-worker -f helm/values.local.yaml
+#
+# Add the Prefect Helm repo if you haven't already:
+#   helm repo add prefect https://prefecthq.github.io/prefect-helm
+#   helm repo update
+
+worker:
+  config:
+    workPool: "<PREFECT_WORK_POOL_NAME>"
+  cloudApiConfig:
+    accountId: "<PREFECT_ACCOUNT_ID>"
+    workspaceId: "<PREFECT_WORKSPACE_ID>"
+    apiKeySecret:
+      name: "<PREFECT_API_KEY_SECRET_NAME>"  # Kubernetes secret name (default: prefect-api-key)
+      key: key
+  extraEnvVars:
+    - name: PREFECT_LOGGING_ORION_WHEN_MISSING_FLOW
+      value: ignore
+    - name: PREFECT_LOGGING_LEVEL
+      value: DEBUG
+    - name: PREFECT_EXPERIMENTS_WORKER_LOGGING_TO_API_ENABLED
+      value: "True"
+    - name: PREFECT_LOGGING_HANDLERS_CONSOLE_FORMATTER
+      value: json

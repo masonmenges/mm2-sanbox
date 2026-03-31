@@ -1,0 +1,29 @@
+# =============================================================================
+# prefect.toml — local Prefect settings
+#
+# Copy this file to prefect.toml and fill in your values.
+# prefect.toml is gitignored and should never be committed.
+#
+# Settings here are applied automatically when you run any Prefect command or
+# flow in this directory. They sit BELOW environment variables / .env in
+# precedence but ABOVE the active profile in ~/.prefect/profiles.toml.
+#
+# Useful when you prefer to keep credentials out of your shell environment
+# and manage them per-project instead.
+#
+# Full settings reference:
+#   https://docs.prefect.io/v3/develop/settings-and-profiles
+# =============================================================================
+
+[api]
+# Your Prefect Cloud API key
+key = "pnu_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# Workspace-scoped API URL
+# Replace <account_id> and <workspace_id> with your UUIDs
+# (find them in the URL when logged in to app.prefect.cloud)
+url = "https://api.prefect.cloud/api/accounts/<account_id>/workspaces/<workspace_id>"
+
+[logging]
+# Comma-separated list of extra loggers to capture at the Prefect log level
+extra_loggers = "logfire"

@@ -26,6 +26,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 /.prefect
+testing/*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -122,6 +123,9 @@ celerybeat.pid
 
 # Environments
 .env
+
+# Prefect local settings (contain credentials)
+prefect.toml
 .venv
 env/
 venv/
@@ -166,4 +170,8 @@ cython_debug/
 terraform.tfstate
 terraform.tfstate.backup   
 
-Docker_stuff/*
+# Helm local overrides (contain sensitive values)
+helm/values.local.yaml
+
+# mypy cache
+.mypy_cache/

@@ -1,0 +1,182 @@
+# Prefect deployment configurations for the mm2-sanbox examples.
+#
+# Before deploying:
+#   1. Copy .env.example to .env and fill in your values
+#   2. Replace WORK_POOL_NAME with your actual work pool name
+#   3. Run: prefect --no-prompt deploy --all
+
+build:
+  - prefect.deployments.steps.run_shell_script:
+      id: get-commit-hash
+      script: git rev-parse --short HEAD
+      stream_output: false
+
+pull:
+  - prefect.deployments.steps.git_clone:
+      repository: https://github.com/masonmenges/mm2-sanbox.git
+      branch: main
+
+deployments:
+
+  # ---------------------------------------------------------------------------
+  # 01 — Basic Flow
+  # Scheduled daily; CANCEL_NEW prevents overlap if a run is still active.
+  # ---------------------------------------------------------------------------
+  - name: basic-flow
+    entrypoint: examples/01_basic_flow.py:basic_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, basic]
+    concurrency_limit:
+      limit: 1
+      collision_strategy: CANCEL_NEW
+    schedules:
+      - cron: "0 9 * * 1-5"
+        timezone: "America/New_York"
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        env:
+          PREFECT_ENVIRONMENT: prod
+
+  # ---------------------------------------------------------------------------
+  # 02 — Dynamic Parameters
+  # No schedule — triggered manually or via the UI with custom inputs.
+  # ---------------------------------------------------------------------------
+  - name: dynamic-parameters
+    entrypoint: examples/02_dynamic_parameters.py:demo_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, parameters]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+
+  # ---------------------------------------------------------------------------
+  # 03 — Task Caching
+  # S3 bucket block name and cache refresh flag passed as job variables.
+  # ---------------------------------------------------------------------------
+  - name: task-caching
+    entrypoint: examples/03_task_caching.py:main_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, caching]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        env:
+          S3_RESULT_BUCKET: "{{ $S3_RESULT_BUCKET }}"
+          REFRESH_CACHE: "{{ $REFRESH_CACHE }}"
+
+  # ---------------------------------------------------------------------------
+  # 04 — Concurrent Tasks
+  # ENQUEUE allows up to 3 concurrent runs; additional runs queue rather than drop.
+  # ---------------------------------------------------------------------------
+  - name: concurrent-tasks
+    entrypoint: examples/04_concurrent_tasks.py:concurrent_tasks_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, concurrency]
+    concurrency_limit:
+      limit: 3
+      collision_strategy: ENQUEUE
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+
+  # ---------------------------------------------------------------------------
+  # 05 — Run Deployment Fan-out (child)
+  # Deploy this first — parent_flow submits runs against it.
+  # ---------------------------------------------------------------------------
+  - name: child-flow
+    entrypoint: examples/05_run_deployment_fanout.py:child_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, deployment]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+
+  # ---------------------------------------------------------------------------
+  # 05 — Run Deployment Fan-out (parent)
+  # Fans out to child-flow deployments and polls for completion.
+  # ---------------------------------------------------------------------------
+  - name: run-deployment-fanout
+    entrypoint: examples/05_run_deployment_fanout.py:parent_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, deployment]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+
+  # ---------------------------------------------------------------------------
+  # 06 — Custom Events
+  # Event trigger: fires when an upstream pipeline emits a completion event.
+  # Parameters are extracted from the event payload.
+  # ---------------------------------------------------------------------------
+  - name: custom-events
+    entrypoint: examples/06_custom_events.py:event_emitting_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, events]
+    triggers:
+      - type: event
+        enabled: true
+        name: upstream-pipeline-completed
+        description: "Fires when an upstream pipeline emits a completion event"
+        expect:
+          - "myorg.pipeline.item.completed"
+        match:
+          "prefect.resource.id": "myorg.pipeline.*"
+        parameters:
+          item: "{{ event.payload['item'] }}"
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+
+  # ---------------------------------------------------------------------------
+  # 07 — Schema Validation
+  # ---------------------------------------------------------------------------
+  - name: schema-validation
+    entrypoint: examples/07_schema_validation.py:test_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, schema]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+
+  # ---------------------------------------------------------------------------
+  # 08 — State Hooks
+  # Slack credentials block name injected via env var.
+  # ---------------------------------------------------------------------------
+  - name: state-hooks
+    entrypoint: examples/08_state_hooks.py:failing_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, hooks]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        env:
+          SLACK_CREDENTIALS_BLOCK: "{{ $SLACK_CREDENTIALS_BLOCK }}"
+
+  # ---------------------------------------------------------------------------
+  # 09 — Automations
+  # Run this deployment to provision the Slack notification automation.
+  # ---------------------------------------------------------------------------
+  - name: deploy-automations
+    entrypoint: examples/09_automations.py:deploy_slack_notifications
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, automations]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+      job_variables:
+        env:
+          SLACK_WEBHOOK_URL: "{{ prefect.variables.slack_webhook_url }}"
+
+  # ---------------------------------------------------------------------------
+  # 10 — Task Dependencies
+  # ---------------------------------------------------------------------------
+  - name: task-dependencies
+    entrypoint: examples/10_task_dependencies.py:dependency_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, dependencies]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
+
+  # ---------------------------------------------------------------------------
+  # 11 — Process Pool (CPU-bound)
+  # ---------------------------------------------------------------------------
+  - name: process-pool
+    entrypoint: examples/11_process_pool.py:process_pool_flow
+    version: "{{ get-commit-hash.stdout }}"
+    tags: [example, concurrency]
+    work_pool:
+      name: "{{ $PREFECT_WORK_POOL_NAME }}"
